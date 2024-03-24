@@ -10,6 +10,7 @@ import model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import session.SessionManager.SessionUser;
 
 class SessionManagerTest {
 
@@ -40,11 +41,11 @@ class SessionManagerTest {
 
         // when
         sessionManager.enroll(sessionId, testUser);
-        Optional<Object> session = sessionManager.getSession(sessionId);
+        Optional<SessionUser> session = sessionManager.getSession(sessionId);
 
         // then
         assertThat(session.isPresent()).isTrue();
-        assertThat((User) session.get()).isEqualTo(testUser);
+        assertThat(session.get().id()).isEqualTo(testUser.getUserId());
     }
 
     @DisplayName("test-1234-5678에 해당하는 세션을 제거한 뒤 해당 세션 아이디로 세션을 찾으면 빈 Optional 을 반환한다")
@@ -56,25 +57,27 @@ class SessionManagerTest {
 
         // when
         sessionManager.delete(sessionId);
-        Optional<Object> session = sessionManager.getSession(sessionId);
+        Optional<SessionUser> session = sessionManager.getSession(sessionId);
 
         // then
         assertThat(session.isEmpty()).isTrue();
         assertThatThrownBy(session::get).isInstanceOf(NoSuchElementException.class);
     }
 
-    @DisplayName("쿠키(SID=test-test)로부터 세션 아이디(test-test)를 가져올 수 있다")
+    @DisplayName("쿠키(SID=test-test)로부터 testUser에 해당하는 세션 아이디(test-test)를 가져올 수 있다")
     @Test
     void findSessionId_success() {
         // given
         String sessionKey = "SID";
         String sessionId = "test-test";
+
+        /* 테스트 유저와 매핑되는 세션 아이디를 쿠키에 설정 */
         Cookie cookie1 = new Cookie(sessionKey, sessionId);
-        Cookie cookie2 = new Cookie("MyKey", "MyId");
+        Cookie cookie2 = new Cookie("MyKey", "MyId"); // 더미 쿠키
 
         List<Cookie> cookies = List.of(cookie1, cookie2);
 
-        sessionManager.enroll(sessionKey, sessionId);
+        sessionManager.enroll(sessionKey, testUser); // 세션에 유저 등록
 
         // when
         String result = sessionManager.findSessionId(cookies, "SID");

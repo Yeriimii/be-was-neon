@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import model.User;
 import session.SessionManager;
+import session.SessionManager.SessionUser;
 
 public class MemberList extends DynamicHtmlProcessor {
     private final SessionManager sessionManager = new SessionManager();
@@ -20,7 +21,7 @@ public class MemberList extends DynamicHtmlProcessor {
     public void process(HttpRequest request, HttpResponse response) {
         List<Cookie> cookies = request.getCookie();
         String sessionId = sessionManager.findSessionId(cookies, "SID");
-        Optional<Object> optionalSession = sessionManager.getSession(sessionId);
+        Optional<SessionUser> optionalSession = sessionManager.getSession(sessionId);
 
         if (optionalSession.isEmpty()) {
             /* http response 작성 */
@@ -31,8 +32,8 @@ public class MemberList extends DynamicHtmlProcessor {
         }
 
         /* 로그인 유저 정보 */
-        User sessionUser = (User) optionalSession.get();
-        String userName = sessionUser.getName();
+        SessionUser sessionUser = optionalSession.get();
+        String userName = sessionUser.id();
 
         /* html 테이블 생성 */
         createHtmlHeader();

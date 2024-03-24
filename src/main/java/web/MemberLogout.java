@@ -8,6 +8,7 @@ import http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import session.SessionManager;
+import session.SessionManager.SessionUser;
 
 public class MemberLogout extends StaticHtmlProcessor {
     private static final String SESSION_NAME = "SID";
@@ -17,7 +18,7 @@ public class MemberLogout extends StaticHtmlProcessor {
     public void process(HttpRequest request, HttpResponse response) {
         List<Cookie> cookies = request.getCookie();
         String sessionId = sessionManager.findSessionId(cookies, SESSION_NAME);
-        Optional<Object> sessionUser = sessionManager.getSession(sessionId);
+        Optional<SessionUser> sessionUser = sessionManager.getSession(sessionId);
 
         /* 존재하지 않는 세션: 루트('/')로 리다이렉션 */
         if (sessionUser.isEmpty()) {
