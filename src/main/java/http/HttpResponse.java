@@ -42,7 +42,8 @@ public class HttpResponse {
     }
 
     public HttpResponse setCharset(String charset) {
-        writeString(this.charset + charset + CRLF);
+        this.charset += charset;
+        writeString(this.charset + CRLF);
         return this;
     }
 
