@@ -60,17 +60,17 @@ public class DynamicHtmlProcessor extends HttpProcessor {
 
     private String createUserProfile(String userId) {
         return String.format("""
-                <li class=\"header__menu__item\">
-                  <div class=\"comment__item__user\">
-                    <img class=\"comment__item__user__img\" />
-                    <p class=\"comment__item__user__nickname\" style=\"padding: 15px\"> %s </p>
+                <li class="header__menu__item">
+                  <div class="comment__item__user">
+                    <img class="comment__item__user__img" />
+                    <p class="comment__item__user__nickname" style="padding: 15px"> %s </p>
                   </div >
                 </li >
-                <li class=\"header__menu__item\">
-                <a class=\"btn btn_contained btn_size_s\" href=\"/article\">글쓰기</a>
+                <li class="header__menu__item">
+                <a class="btn btn_contained btn_size_s" href="/article">글쓰기</a>
                 </li >
-                <li class=\"header__menu__item\">
-                <a href =\"/logout\" id=\"logout-btn\" class=\"btn btn_danger btn_size_s\">로그아웃</a>
+                <li class="header__menu__item">
+                <a href ="/logout" id="logout-btn" class="btn btn_danger btn_size_s">로그아웃</a>
                 </li >
                 """, userId);
     }
