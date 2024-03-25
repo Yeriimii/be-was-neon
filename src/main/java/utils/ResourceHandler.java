@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 public class ResourceHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceHandler.class);
-    public static final String RESOURCE_PATH = "./src/main/resources/static"; // TODO: 이름 변경하기
+    public static final String STATIC_PATH = "./src/main/resources/static";
     public static final String TEMPLATE_PATH = "./src/main/resources/templates";
     public static final String INDEX_HTML = "index.html";
     public static final Map<String, String> FILE_EXTENSION_MAP = Map.of(

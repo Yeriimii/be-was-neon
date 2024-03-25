@@ -20,12 +20,12 @@ public abstract class HttpProcessor {
         String extension = getExtension(request.getRequestURI());
 
         if (FILE_EXTENSION_MAP.containsKey(extension)) { // /index.html, /min.css, ...
-            return read(RESOURCE_PATH + request.getRequestURI());
+            return read(STATIC_PATH + request.getRequestURI());
         }
         if (request.getRequestURI().equals("/")) { // localhost:8080/
-            return read(RESOURCE_PATH + "/" + INDEX_HTML);
+            return read(STATIC_PATH + "/" + INDEX_HTML);
         }
-        return read(RESOURCE_PATH + request.getRequestURI() + "/" + INDEX_HTML); // /registration
+        return read(STATIC_PATH + request.getRequestURI() + "/" + INDEX_HTML); // /registration
     }
 
     public void responseHeader200(HttpResponse response, String contentType) {
