@@ -54,4 +54,60 @@ class ResourceHandlerTest {
                 ".js"
         );
     }
+
+    @DisplayName("존재하는 '/' 디렉토리는 'templates/index.html' 파일을 읽기 때문에 반환 문자열 길이는 0을 초과한다")
+    @Test
+    void read_template_success_when_exists_directory() {
+        // given
+        String filePath = "/";
+
+        // when
+        String template = ResourceHandler.readTemplate(filePath);
+
+        // then
+        assertThat(template.length()).isGreaterThan(0);
+        assertThat(template.startsWith("<!DOCTYPE html>")).isTrue();
+    }
+
+    @DisplayName("존재하는 'templates/index.html' 파일의 반환 문자열 길이는 0을 초과한다")
+    @Test
+    void read_template_success_when_exists_file() {
+        // given
+        String filePath = "/index.html";
+
+        // when
+        String template = ResourceHandler.readTemplate(filePath);
+
+        // then
+        assertThat(template.length()).isGreaterThan(0);
+        assertThat(template.startsWith("<!DOCTYPE html>")).isTrue();
+    }
+
+    @DisplayName("'templates/index' 이라는 존재하지 않는 디렉토리의 반환 문자열 길이는 0이다")
+    @Test
+    void read_template_fail_when_not_exist_directory() {
+        // given
+        String filePath = "/index";
+
+        // when
+        String template = ResourceHandler.readTemplate(filePath);
+
+        // then
+        assertThat(template.length()).isEqualTo(0);
+        assertThat(template.isEmpty()).isTrue();
+    }
+
+    @DisplayName("'templates/not_exist/index.html' 이라는 존재하지 않는 파일의 반환 문자열 길이는 0이다")
+    @Test
+    void read_template_fail_when_not_exist_file() {
+        // given
+        String filePath = "not_exist/index.html";
+
+        // when
+        String template = ResourceHandler.readTemplate(filePath);
+
+        // then
+        assertThat(template.length()).isEqualTo(0);
+        assertThat(template.isEmpty()).isTrue();
+    }
 }

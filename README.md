@@ -175,6 +175,7 @@ sequenceDiagram
 ## ResourceHandler
 - [x] 파일을 읽어 byte로 변환할 수 있다
 - [x] URI 경로에서 확장자만 추출할 수 있다
+- [x] 동적 HTML을 생성하기 위한 템플릿 파일을 읽어 문자열로 반환할 수 있다
 
 ## StaticMapper
 - [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
