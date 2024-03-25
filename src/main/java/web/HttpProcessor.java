@@ -48,7 +48,7 @@ public abstract class HttpProcessor {
     }
 
     public void responseMessage(HttpResponse response, StringBuilder builder) {
-        response.setContentLength(builder.length())
+        response.setContentLength(builder.toString().getBytes().length)
                 .setMessageBody(builder.toString());
 
         builder.setLength(0); // StringBuilder 초기화
