@@ -35,6 +35,7 @@ public class UriMapper {
         URI_MAP.put("/login", new MemberLogin());
         URI_MAP.put("/logout", new MemberLogout());
         URI_MAP.put("/user/list", new MemberList());
+        URI_MAP.put("/article", new ArticleWrite());
     }
 
     public Optional<HttpProcessor> getProcessor(String uri) {
