@@ -1,10 +1,12 @@
 package web;
 
+import db.ArticleDatabase;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
+import model.Article;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
 import utils.ResourceHandler;
@@ -31,8 +33,13 @@ public class DynamicHtmlProcessor extends HttpProcessor {
         /* 세션 유저가 존재하면 user id 표시 */
         if (sessionUser.isPresent()) {
             SessionUser user = sessionUser.get();
-            String dynamicHtml = createUserProfile(user.id());
-            changeHtml("<!-- target -->", "<!-- end -->", dynamicHtml);
+            String userProfile = createUserProfile(user.id());
+            changeHtml("<!-- target user -->", "<!-- end user -->", userProfile);
+
+            /* 작성한 게시글이 있으면 게시글 내용 입력 */
+            Optional<Article> article = ArticleDatabase.findLatest(user.id());
+            article.ifPresent(latestArticle ->
+                    changeHtml("<!-- target article -->", "<!-- end article -->", latestArticle.body()));
         }
 
         /* http response 작성 */
