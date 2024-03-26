@@ -194,3 +194,8 @@ sequenceDiagram
 
 ## Cookie
 - [x] 쿠키 값을 설정하고 Path를 설정할 수 있다
+
+## ArticleDatabase
+- [x] 추가할 때 마다 id가 1씩 증가한다
+- [x] 게시물 아이디로 찾을 수 있다
+- [x] 작성자 아이디로 찾을 수 있다
