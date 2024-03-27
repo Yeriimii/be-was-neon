@@ -44,16 +44,14 @@ class HttpResponseTest {
 
         // then
         assertThat(byteArrayOutputStream.toString()).isEqualTo(
-                """
-                        HTTP/1.1 200 OK
-                        Content-Type: text/html; charset=utf-8
-                        Content-Length: 100
-                        Location: /myLocation.html
-                        Set-Cookie: myCookie=myValue; Path=/index.html;\s
-                        Last-Modified: 2024-03-13T13:00:12
-                        
-                        Hi
-                        """
+                "HTTP/1.1 200 OK\r\n"
+                        + "Content-Type: text/html; charset=utf-8\r\n"
+                        + "Content-Length: 100\r\n"
+                        + "Location: /myLocation.html\r\n"
+                        + "Set-Cookie: myCookie=myValue; Path=/index.html;\s\r\n"
+                        + "Last-Modified: 2024-03-13T13:00:12\r\n"
+                        + "\r\n"
+                        + "Hi\r\n"
         );
     }
 
@@ -72,6 +70,6 @@ class HttpResponseTest {
 
         // then
         assertThat(byteArrayOutputStream.toString())
-                .isEqualTo("Set-Cookie: myCookie=myValue1; myCookie=myValue2; Path=/; \n");
+                .isEqualTo("Set-Cookie: myCookie=myValue1; myCookie=myValue2; Path=/; \r\n");
     }
 }

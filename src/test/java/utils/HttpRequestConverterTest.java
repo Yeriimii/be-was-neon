@@ -4,6 +4,8 @@ import static http.HttpRequest.*;
 import static org.assertj.core.api.Assertions.*;
 
 import http.HttpRequest;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -14,22 +16,24 @@ class HttpRequestConverterTest {
     void convert() {
         // given
         String header = """
-                GET /index.html HTTP/1.1
-                Host: localhost:8080
-                Connection: keep-alive
-                Referer: "https://www.google.com/"
-                Pragma: no-cache
-                Cache-Control: no-cache
-                User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36
-                Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
-                Accept-Encoding: gzip, deflate, br, zstd
-                Accept-Language: ko,en-US;q=0.9,en;q=0.8,ko-KR;q=0.7
-                Cookie: Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f;
-                If-Modified-Since: none;
-                If-None-Match: none;
+                GET /index.html HTTP/1.1\r\n
+                Host: localhost:8080\r\n
+                Connection: keep-alive\r\n
+                Referer: "https://www.google.com/"\r\n
+                Pragma: no-cache\r\n
+                Cache-Control: no-cache\r\n
+                User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36\r\n
+                Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n
+                Accept-Encoding: gzip, deflate, br, zstd\r\n
+                Accept-Language: ko,en-US;q=0.9,en;q=0.8,ko-KR;q=0.7\r\n
+                Cookie: Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f;\r\n
+                If-Modified-Since: none;\r\n
+                If-None-Match: none;\r\n
                 """;
+        InputStream inputStream = new ByteArrayInputStream(header.getBytes());
+
         // when
-        HttpRequest httpRequest = HttpRequestConverter.convert(header);
+        HttpRequest httpRequest = HttpRequestConverter.convertToHttpRequest(inputStream);
 
         // then
         /* request line */
@@ -58,14 +62,14 @@ class HttpRequestConverterTest {
     @Test
     void post_convert() {
         // given
-        String header = """
-                POST /registration HTTP/1.1
-                Host: localhost:8080
-                Content-Length: 66
-                id=yelly&password=myPassword&username=testName&email=test@test.com""";
+        String header = "POST /registration HTTP/1.1\r\n" +
+                "Host: localhost:8080\r\n" +
+                "Content-Length: 66\r\n\r\n" +
+                "id=yelly&password=myPassword&username=testName&email=test@test.com";
+        InputStream inputStream = new ByteArrayInputStream(header.getBytes());
 
         // when
-        HttpRequest httpRequest = HttpRequestConverter.convert(header);
+        HttpRequest httpRequest = HttpRequestConverter.convertToHttpRequest(inputStream);
 
         // then
         assertThat(httpRequest.getParameter("id")).isEqualTo("yelly");
