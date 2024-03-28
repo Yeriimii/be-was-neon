@@ -34,7 +34,7 @@
 
     <div class="page">
         <h2 class="page-title">게시글 작성</h2>
-        <form class="form" action="" method="post">
+        <form class="form" action="" method="post" enctype="multipart/form-data">
             <div class="textfield textfield_size_m">
                 <p class="title_textfield">내용</p>
                 <textarea
@@ -44,6 +44,11 @@
                         name="article-body"
                 ></textarea>
             </div>
+            <label class="custom-file-upload">
+                <input type="file" name="photo" accept="image/*" onchange="displayFileName(this)">
+                <span>이미지 업로드</span>
+            </label>
+            <div id="file-name"></div>
             <button
                     id="registration-btn"
                     class="btn btn_contained btn_size_m"
@@ -57,3 +62,11 @@
 </div>
 </body>
 </html>
+
+<script>
+    function displayFileName(input) {
+        const fileName = input.files[0].name;
+        const display = document.getElementById("file-name");
+        display.textContent = fileName;
+    }
+</script>
