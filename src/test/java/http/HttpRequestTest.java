@@ -53,11 +53,9 @@ class HttpRequestTest {
                 null, null, null, List.of(multiPart));
 
         // when
-        List<MultiPart> parts = mockRequest.getParts();
+        MultiPart findPart = mockRequest.getPart("username");
 
         // then
-        assertThat(parts.size()).isEqualTo(1);
-        assertThat(parts.get(0)).extracting("name").isEqualTo("username");
-        assertThat(parts.get(0)).extracting("partBody").isEqualTo(partBody);
+        assertThat(findPart.partBody()).isEqualTo("yelly".getBytes(StandardCharsets.UTF_8));
     }
 }

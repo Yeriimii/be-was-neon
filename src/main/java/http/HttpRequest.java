@@ -2,6 +2,7 @@ package http;
 
 import static utils.HttpConstant.QUERY_PARAM_SYMBOL;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +56,11 @@ public class HttpRequest {
         return Collections.unmodifiableList(cookies);
     }
 
-    public List<MultiPart> getParts() {
-        return Collections.unmodifiableList(parts);
+    public MultiPart getPart(String partName) {
+        return parts.stream()
+                .filter(part -> part.name.equals(partName))
+                .findAny()
+                .orElse(null);
     }
 
     public enum HttpMethod {
@@ -79,12 +83,12 @@ public class HttpRequest {
     public record MultiPart(String name, String submittedFileName, String contentType, byte[] partBody) {
 
         @Override
-            public String toString() {
-                return "MultiPart[" +
-                        "name=" + name + ", " +
-                        "submittedFileName=" + submittedFileName + ", " +
-                        "contentType=" + contentType + ", " +
-                        "hasPartBody=" + (partBody.length > 0) + ']';
-            }
+        public String toString() {
+            return "MultiPart[" +
+                    "name=" + name + ", " +
+                    "submittedFileName=" + submittedFileName + ", " +
+                    "contentType=" + contentType + ", " +
+                    "hasPartBody=" + (partBody.length > 0) + ']';
         }
+    }
 }
