@@ -15,11 +15,8 @@ public enum HttpRequestParser {
     QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&;\\s]+)")),
     REQUEST_MESSAGE(Pattern.compile("\\r\\n\\r\\n((?!------WebKitFormBoundary).+\\s*)+")),
     CONTENT_LENGTH(Pattern.compile("Content-Length\\s?:\\s?(\\d*)")),
-    MULTI_PART(Pattern.compile(
-            "(?s)form-data;\\sname=\"(.*?)\".*?(?:;\\sfilename=\"(.*?)\".*?"
-            + "Content-Type:\\s(image/.+))?.*?"
-            + "\\r\\n\\r\\n(.*?)\\r\\n"
-            + "------WebKitFormBoundary.*?")),
+    MULTI_PART_ATTR(Pattern.compile("(?s)form-data;\\sname=\"(.*?)\".*?(?:filename=\"(.*?)\".*?Content-Type:\\s(image/.*?))?\\r\\n")),
+    MULTI_PART_BODY(Pattern.compile("(?s)form-data;.*?\\r\\n\\r\\n(.*?)\\r\\n------WebKitForm")),
     ;
 
     private final Pattern compiledPattern;
@@ -85,8 +82,8 @@ public enum HttpRequestParser {
     }
 
     /**
-     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환한다.
-     * 이미지 파일은 MultiPart 객체의 contentType에 해당 확장자(ex. png, jpg, gif 등)를 입력한다.
+     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환한다. 이미지 파일은 MultiPart 객체의 contentType에 해당
+     * 확장자(ex. png, jpg, gif 등)를 입력한다.
      *
      * @param httpMessage - HTTP Message
      * @return 파싱된 MultiPart 객체의 리스트. 발견된 MultiPart가 없을 경우 빈 리스트를 반환한다.
@@ -94,23 +91,26 @@ public enum HttpRequestParser {
     public static List<MultiPart> parseMultiPart(String httpMessage) {
         List<MultiPart> multiParts = new ArrayList<>();
 
-        Matcher partMatcher = MULTI_PART.compiledPattern.matcher(httpMessage);
-        while (partMatcher.find()) {
+        Matcher attrMatcher = MULTI_PART_ATTR.compiledPattern.matcher(httpMessage);
+        Matcher bodyMatcher = MULTI_PART_BODY.compiledPattern.matcher(httpMessage);
+        while (attrMatcher.find()) {
             /* HTML <input> 태그의 name 속성의 값 */
-            String name = partMatcher.group(1);
+            String name = attrMatcher.group(1);
 
             /* 전송한 파일의 이름 */
-            String submittedFileName = partMatcher.group(2);
+            String submittedFileName = attrMatcher.group(2);
 
             /* Content-Type 라인 */
-            String contentType = partMatcher.group(3);
+            String contentType = attrMatcher.group(3);
 
             /* 본문 부분: 텍스트, 이미지 모두 byte[]로 처리 */
-            byte[] partBody = httpMessage.substring(partMatcher.start(4), partMatcher.end(4)).getBytes();
+            byte[] partBody = null;
+            if (bodyMatcher.find(attrMatcher.start())) {
+                partBody = httpMessage.substring(bodyMatcher.start(1), bodyMatcher.end(1)).getBytes();
+            }
 
             multiParts.add(new MultiPart(name, submittedFileName, contentType, partBody));
         }
-
         return Collections.unmodifiableList(multiParts);
     }
 }
