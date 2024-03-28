@@ -3,7 +3,9 @@ package http;
 import http.HttpRequest.HttpMethod;
 import http.HttpRequest.HttpRequestUri;
 import http.HttpRequest.HttpVersion;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class HttpRequestBuilder {
@@ -12,6 +14,7 @@ public class HttpRequestBuilder {
     private HttpVersion httpVersion;
     private Map<String, String> headers = new HashMap<>();
     private Map<String, String> parameter = new HashMap<>();
+    private List<Cookie> cookies = new ArrayList<>();
 
     public HttpRequest build() {
         return new HttpRequest(
@@ -41,6 +44,11 @@ public class HttpRequestBuilder {
 
     public HttpRequestBuilder setParameter(Map<String, String> parameter) {
         this.parameter = parameter;
+        return this;
+    }
+
+    public HttpRequestBuilder setCookies(List<Cookie> cookies) {
+        this.cookies = cookies;
         return this;
     }
 }

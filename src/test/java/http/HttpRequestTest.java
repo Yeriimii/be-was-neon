@@ -19,12 +19,14 @@ class HttpRequestTest {
     @Test
     void getCookie() {
         // given
+        Cookie cookie1 = new Cookie("SID", "test-test");
+        Cookie cookie2 = new Cookie("myCookie", "myValue");
         Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "SID=test-test; myCookie=myValue;");
 
         HttpRequest request = new HttpRequest(
                 HttpMethod.GET, new HttpRequestUri("test"), new HttpVersion("HTTP/1.1"), headers, new HashMap<>(),
-                List.of(new MultiPart("", "", "", new byte[] {}))
+                List.of(cookie1, cookie2),  List.of(new MultiPart("", "", "", new byte[] {}))
         );
 
         // when
@@ -48,7 +50,7 @@ class HttpRequestTest {
         /* mock request */
         HttpRequest mockRequest = new HttpRequest(HttpMethod.POST, new HttpRequestUri("/test"),
                 new HttpVersion("HTTP/1.1"),
-                null, null, List.of(multiPart));
+                null, null, null, List.of(multiPart));
 
         // when
         List<MultiPart> parts = mockRequest.getParts();

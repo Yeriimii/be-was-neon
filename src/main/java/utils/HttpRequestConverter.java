@@ -4,6 +4,7 @@ import static http.HttpRequest.*;
 import static utils.HttpConstant.*;
 import static utils.HttpRequestParser.*;
 
+import http.Cookie;
 import http.HttpRequest;
 import http.HttpRequestBuilder;
 import java.io.BufferedReader;
@@ -13,6 +14,12 @@ import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -116,11 +123,12 @@ public class HttpRequestConverter {
         return requestLine[HTTP_VERSION_INDEX];
     }
 
-    private static String getHttpBody(String header) {
-        return header.substring(header.lastIndexOf(CRLF));
-    }
+    private static List<Cookie> extractCookies(Map<String, String> headers) {
+        String cookies = headers.get("Cookie");
+        Map<String, String> cookieMap = parseParams(cookies);
 
-    private static String getFullUri(String[] requestLine) {
-        return String.join(SP, requestLine);
+        return cookieMap.entrySet().stream()
+                .map(entry -> new Cookie(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

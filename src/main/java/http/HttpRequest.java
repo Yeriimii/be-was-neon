@@ -1,7 +1,6 @@
 package http;
 
 import static utils.HttpConstant.QUERY_PARAM_SYMBOL;
-import static utils.HttpRequestParser.parseParams;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,15 +12,18 @@ public class HttpRequest {
     private final HttpVersion httpVersion;
     private final Map<String, String> headers;
     private final Map<String, String> parameter;
+    private final List<Cookie> cookies;
     private final List<MultiPart> parts;
 
     protected HttpRequest(HttpMethod method, HttpRequestUri requestURI, HttpVersion httpVersion,
-                          Map<String, String> headers, Map<String, String> parameter, List<MultiPart> parts) {
+                          Map<String, String> headers, Map<String, String> parameter,
+                          List<Cookie> cookies, List<MultiPart> parts) {
         this.method = method;
         this.requestURI = requestURI;
         this.httpVersion = httpVersion;
         this.headers = headers;
         this.parameter = parameter;
+        this.cookies = cookies;
         this.parts = parts;
     }
 
@@ -50,12 +52,7 @@ public class HttpRequest {
     }
 
     public List<Cookie> getCookie() {
-        String cookies = getHeader("Cookie");
-        Map<String, String> cookieMap = parseParams(cookies);
-
-        return cookieMap.entrySet().stream()
-                .map(entry -> new Cookie(entry.getKey(), entry.getValue()))
-                .toList();
+        return Collections.unmodifiableList(cookies);
     }
 
     public List<MultiPart> getParts() {

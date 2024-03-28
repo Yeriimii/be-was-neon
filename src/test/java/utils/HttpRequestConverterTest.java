@@ -5,11 +5,24 @@ import static org.assertj.core.api.Assertions.*;
 
 import http.HttpRequest;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class HttpRequestConverterTest {
+
+    private InputStream inputStream;
+
+    @AfterEach
+    void close() {
+        try {
+            inputStream.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @DisplayName("HTTP request header로 부터 HttpRequest를 생성할 수 있다")
     @Test
@@ -30,7 +43,7 @@ class HttpRequestConverterTest {
                 If-Modified-Since: none;\r\n
                 If-None-Match: none;\r\n
                 """;
-        InputStream inputStream = new ByteArrayInputStream(header.getBytes());
+        inputStream = new ByteArrayInputStream(header.getBytes());
 
         // when
         HttpRequest httpRequest = HttpRequestConverter.convertToHttpRequest(inputStream);
@@ -62,11 +75,12 @@ class HttpRequestConverterTest {
     @Test
     void post_convert() {
         // given
-        String header = "POST /registration HTTP/1.1\r\n" +
-                "Host: localhost:8080\r\n" +
-                "Content-Length: 66\r\n\r\n" +
-                "id=yelly&password=myPassword&username=testName&email=test@test.com";
-        InputStream inputStream = new ByteArrayInputStream(header.getBytes());
+        String header = "POST /registration HTTP/1.1\r\n"
+                + "Host: localhost:8080\r\n"
+                + "Content-Length: 66\r\n"
+                + "Cookie: Idea-fcd223d4=b6a3f2fa-6bf3-46d9-9244-dc44850cb75f;\r\n\r\n"
+                + "id=yelly&password=myPassword&username=testName&email=test@test.com";
+        inputStream = new ByteArrayInputStream(header.getBytes());
 
         // when
         HttpRequest httpRequest = HttpRequestConverter.convertToHttpRequest(inputStream);
