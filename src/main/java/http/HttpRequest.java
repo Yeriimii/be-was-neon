@@ -33,6 +33,10 @@ public class HttpRequest {
         return requestURI.uri();
     }
 
+    public String getPath() {
+        return requestURI.uri().split(QUERY_PARAM_SYMBOL)[0]; // 쿼리 파라미터를 제외한 부분
+    }
+
     public String getHttpVersion() {
         return httpVersion.version();
     }

@@ -34,7 +34,7 @@ public class MemberLogin extends StaticHtmlProcessor {
         /* 로그인 실패: login-failed.html 리다이렉션 */
         if (optionalUser.isEmpty()) {
             logger.debug("[LOGIN] failed login. userId={}, password={}", id, password);
-            responseHeader302(response, request.getRequestURI() + "/login-failed.html");
+            responseHeader302(response, request.getPath() + "/login-failed.html");
             response.setMessageBody(CRLF);
             response.flush();
             return;

@@ -39,8 +39,8 @@ public class RequestHandler implements Runnable {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(), connection.getPort());
         logger.debug("URI = {}", request.getRequestURI());
 
-        // HttpRequest를 처리할 Processor 찾기
-        Optional<HttpProcessor> optionalProcessor = findProcessor(request.getRequestURI());
+            // HttpRequest를 처리할 Processor 찾기
+            Optional<HttpProcessor> optionalProcessor = findProcessor(request.getPath());
 
         // Processor가 존재하면 로직 실행, 없으면 404 status 반환
         optionalProcessor.ifPresentOrElse(this::handle, responseEmpty);

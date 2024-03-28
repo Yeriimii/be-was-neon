@@ -27,7 +27,7 @@ public class DynamicHtmlProcessor extends HttpProcessor {
         Optional<SessionUser> sessionUser = sessionManager.getSession(sessionId);
 
         /* 기본 HTML 작성 */
-        String htmlTemplate = readTemplate(request.getRequestURI());
+        String htmlTemplate = readTemplate(request.getPath());
         htmlBuilder.append(htmlTemplate);
 
         /* 세션 유저가 존재하면 user id 표시 */
