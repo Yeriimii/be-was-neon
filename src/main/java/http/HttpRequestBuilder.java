@@ -3,6 +3,7 @@ package http;
 import http.HttpRequest.HttpMethod;
 import http.HttpRequest.HttpRequestUri;
 import http.HttpRequest.HttpVersion;
+import http.HttpRequest.MultiPart;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,10 +16,11 @@ public class HttpRequestBuilder {
     private Map<String, String> headers = new HashMap<>();
     private Map<String, String> parameter = new HashMap<>();
     private List<Cookie> cookies = new ArrayList<>();
+    private List<MultiPart> parts = new ArrayList<>();
 
     public HttpRequest build() {
         return new HttpRequest(
-                method, requestURI, httpVersion, headers, parameter
+                method, requestURI, httpVersion, headers, parameter, cookies, parts
         );
     }
 
@@ -27,13 +29,13 @@ public class HttpRequestBuilder {
         return this;
     }
 
-    public HttpRequestBuilder setRequestURI(String requestURI) {
-        this.requestURI = new HttpRequestUri(requestURI);
+    public HttpRequestBuilder setRequestURI(HttpRequestUri requestURI) {
+        this.requestURI = requestURI;
         return this;
     }
 
-    public HttpRequestBuilder setHttpVersion(String httpVersion) {
-        this.httpVersion = new HttpVersion(httpVersion);
+    public HttpRequestBuilder setHttpVersion(HttpVersion httpVersion) {
+        this.httpVersion = httpVersion;
         return this;
     }
 
@@ -49,6 +51,11 @@ public class HttpRequestBuilder {
 
     public HttpRequestBuilder setCookies(List<Cookie> cookies) {
         this.cookies = cookies;
+        return this;
+    }
+
+    public HttpRequestBuilder setParts(List<MultiPart> parts) {
+        this.parts = parts;
         return this;
     }
 }
