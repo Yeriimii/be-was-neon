@@ -163,6 +163,9 @@ sequenceDiagram
 ## HttpHeaderParser
 - [x] request line, host, connection 등을 파싱할 수 있다
 - [x] 쿼리 파라미터를 파싱해서 Map으로 변환할 수 있다
+- [x] Content-Length 값을 파싱할 수 있다
+- [x] Request Body 문자열을 파싱할 수 있다
+- [x] Multi Part Boundary 부분들을 파싱할 수 있다
 
 ## HttpRequestConverter
 - [x] Socket의 connection으로부터 requestString을 한 줄로 만들 수 있다
