@@ -23,9 +23,6 @@ import org.slf4j.LoggerFactory;
 
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
-    private static final int METHOD_INDEX = 0;
-    private static final int URL_INDEX = 1;
-    private static final int HTTP_VERSION_INDEX = 2;
     private static final Predicate<String> CHECK_ALL_CONTENT_RECEIVED = request -> parseRequestBody(request).length()
             == parseContentLength(request);
     private static final Predicate<String> CHECK_END_OF_BOUNDARY = request -> request.endsWith("--" + CRLF);
@@ -75,13 +72,13 @@ public class HttpRequestConverter {
                                                             CompletableFuture<List<MultiPart>> multiPartFuture) {
         /* 파싱 후 HttpRequestBuilder 작업 생성 */
         CompletableFuture<Void> methodBuilder = requestLineFuture.thenAccept(
-                requestLine -> REQUEST_BUILDER.setMethod(extractMethod(requestLine)));
+                requestLine -> REQUEST_BUILDER.setMethod(parseMethod(requestLine)));
 
         CompletableFuture<Void> uriBuilder = requestLineFuture.thenAccept(
-                requestLine -> REQUEST_BUILDER.setRequestURI(extractRequestURI(requestLine)));
+                requestLine -> REQUEST_BUILDER.setRequestURI(parseUri(requestLine)));
 
         CompletableFuture<Void> versionBuilder = requestLineFuture.thenAccept(
-                requestLine -> REQUEST_BUILDER.setHttpVersion(extractHttpVersion(requestLine)));
+                requestLine -> REQUEST_BUILDER.setHttpVersion(parseVersion(requestLine)));
 
         CompletableFuture<Void> paramsBuilder = requestLineFuture.thenAcceptBoth(requestBodyFuture,
                 (requestLine, requestBody) -> REQUEST_BUILDER.setParameter(
@@ -118,18 +115,6 @@ public class HttpRequestConverter {
 
     private static String decode(String request) {
         return URLDecoder.decode(request, UTF_8);
-    }
-
-    private static HttpMethod extractMethod(String requestLine) {
-        return HttpMethod.valueOf(requestLine.split(SP)[METHOD_INDEX]);
-    }
-
-    private static HttpRequestUri extractRequestURI(String requestLine) {
-        return new HttpRequestUri(requestLine.split(SP)[URL_INDEX]);
-    }
-
-    private static HttpVersion extractHttpVersion(String requestLine) {
-        return new HttpVersion(requestLine.split(SP)[HTTP_VERSION_INDEX]);
     }
 
     private static List<Cookie> extractCookies(Map<String, String> headers) {

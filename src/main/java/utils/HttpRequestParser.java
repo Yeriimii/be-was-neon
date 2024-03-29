@@ -1,5 +1,8 @@
 package utils;
 
+import http.HttpRequest.HttpMethod;
+import http.HttpRequest.HttpRequestUri;
+import http.HttpRequest.HttpVersion;
 import http.HttpRequest.MultiPart;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public enum HttpRequestParser {
-    REQUEST_LINE(Pattern.compile("(^GET|^POST) (/.*) (HTTP/.{1,3})")),
+    REQUEST_LINE(Pattern.compile("(?s)(^GET|^POST) (/.*?)\\s(HTTP/.{1,3})")),
+    METHOD(Pattern.compile("(?s)(^GET|^POST)")),
+    URI(Pattern.compile("(?s)(?:^GET|^POST) (/.*?)\\sHTTP/.{1,3}")),
+    VERSION(Pattern.compile("(?s)(?:^GET|^POST /.*?)(HTTP/.{1,3})")),
     HEADERS(Pattern.compile("(?m)^(.*?):\\s(.*?)\\r\\n")),
     QUERY_PARAMETER(Pattern.compile("([^?&=\\s]+)=([^&;\\s]+)")),
     REQUEST_MESSAGE(Pattern.compile("\\r\\n\\r\\n((?!------WebKitFormBoundary).+\\s*)+")),
@@ -31,6 +37,30 @@ public enum HttpRequestParser {
             return requestLineMatcher.group();
         }
         return "";
+    }
+
+    public static HttpMethod parseMethod(String httpMessage) {
+        Matcher methodMatcher = METHOD.compiledPattern.matcher(httpMessage);
+        if (methodMatcher.find()) {
+            return HttpMethod.valueOf(methodMatcher.group(1));
+        }
+        return HttpMethod.GET;
+    }
+
+    public static HttpRequestUri parseUri(String httpMessage) {
+        Matcher uriMatcher = URI.compiledPattern.matcher(httpMessage);
+        if (uriMatcher.find()) {
+            return new HttpRequestUri(uriMatcher.group(1));
+        }
+        return new HttpRequestUri("/");
+    }
+
+    public static HttpVersion parseVersion(String httpMessage) {
+        Matcher versionMatcher = VERSION.compiledPattern.matcher(httpMessage);
+        if (versionMatcher.find()) {
+            return new HttpVersion(versionMatcher.group(1));
+        }
+        return new HttpVersion("HTTP/1.1");
     }
 
     public static Map<String, String> parseHeader(String header) {

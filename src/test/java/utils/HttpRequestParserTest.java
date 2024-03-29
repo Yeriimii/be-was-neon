@@ -3,7 +3,11 @@ package utils;
 import static org.assertj.core.api.Assertions.*;
 import static utils.HttpRequestParser.*;
 
+import http.HttpRequest.HttpMethod;
+import http.HttpRequest.HttpRequestUri;
+import http.HttpRequest.HttpVersion;
 import http.HttpRequest.MultiPart;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -19,9 +23,16 @@ class HttpRequestParserTest {
 
         // when
         String requestLine = parseRequestLine(requestHeader);
+        HttpMethod httpMethod = parseMethod(requestLine);
+        HttpRequestUri httpRequestUri = parseUri(requestLine);
+        HttpVersion httpVersion = parseVersion(requestLine);
 
         // then
         assertThat(requestLine).isEqualTo("GET /home.html HTTP/1.1");
+        assertThat(httpMethod).isEqualTo(HttpMethod.GET);
+        assertThat(httpRequestUri).isEqualTo(new HttpRequestUri("/home.html"));
+        assertThat(httpVersion).isEqualTo(new HttpVersion("HTTP/1.1"));
+
     }
 
     @DisplayName("'/index.html?name=str&id=str2&money=123'에서 쿼리파라미터를 추출하면 name=str, id=str2, money=123 3개 이다")
@@ -211,7 +222,7 @@ class HttpRequestParserTest {
         assertThat(imageMultiPart.name()).isEqualTo("photo");
         assertThat(imageMultiPart.submittedFileName()).isEqualTo("example.png");
         assertThat(imageMultiPart.contentType()).isEqualTo("image/png");
-        assertThat(imageMultiPart.partBody()).isEqualTo("�PNG".getBytes());
+        assertThat(imageMultiPart.partBody()).isEqualTo("�PNG".getBytes(StandardCharsets.ISO_8859_1));
     }
 
     @DisplayName("multipart/form-data가 존재하지 않을 때 빈 리스트를 반환한다")
