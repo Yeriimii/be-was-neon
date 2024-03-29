@@ -24,7 +24,7 @@ class ArticleDatabaseTest {
         LocalDateTime createdAt1 = LocalDateTime.parse("2024-03-26 00:00:00",
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        Article testArticle1 = new Article("test1", "yelly", createdAt1);
+        Article testArticle1 = new Article("test1", "yelly", createdAt1, null);
 
         // when
         ArticleDatabase.add(testArticle1);
@@ -43,8 +43,8 @@ class ArticleDatabaseTest {
         LocalDateTime createdAt2 = LocalDateTime.parse("2024-03-26 00:00:00",
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        Article testArticle1 = new Article("test1", "yelly", createdAt1);
-        Article testArticle2 = new Article("test2", "trolli", createdAt2);
+        Article testArticle1 = new Article("test1", "yelly", createdAt1, null);
+        Article testArticle2 = new Article("test2", "trolli", createdAt2, null);
 
         // when
         ArticleDatabase.add(testArticle1);
@@ -67,10 +67,10 @@ class ArticleDatabaseTest {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         // 가장 오래돤 글
-        Article testArticle1 = new Article("oldest", "yelly", earliestTime);
+        Article testArticle1 = new Article("oldest", "yelly", earliestTime, null);
 
         // 가장 최신 글
-        Article testArticle2 = new Article("latest", "yelly", latestTime);
+        Article testArticle2 = new Article("latest", "yelly", latestTime, null);
 
         ArticleDatabase.add(testArticle1);
         ArticleDatabase.add(testArticle2);

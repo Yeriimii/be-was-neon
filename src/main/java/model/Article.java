@@ -7,11 +7,13 @@ public final class Article {
     private final String body;
     private final String createdBy; // 작성자 아이디
     private final LocalDateTime createdAt;
+    private final String imagePath;
 
-    public Article(String body, String createdBy, LocalDateTime createdAt) {
+    public Article(String body, String createdBy, LocalDateTime createdAt, String imagePath) {
         this.body = body;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
+        this.imagePath = imagePath;
     }
 
     public String body() {
@@ -26,34 +28,42 @@ public final class Article {
         return createdAt;
     }
 
+    public String imagePath() {
+        return imagePath;
+    }
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
+    public boolean equals(Object o) {
+        if (this == o) {
             return true;
         }
-        if (obj == null || obj.getClass() != this.getClass()) {
+        if (!(o instanceof Article article)) {
             return false;
         }
-        var that = (Article) obj;
-        return Objects.equals(this.body, that.body) &&
-                Objects.equals(this.createdBy, that.createdBy) &&
-                Objects.equals(this.createdAt, that.createdAt);
+        return Objects.equals(body, article.body) && Objects.equals(createdBy, article.createdBy)
+                && Objects.equals(createdAt, article.createdAt) && Objects.equals(imagePath, article.imagePath);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(body, createdBy, createdAt);
+        return Objects.hash(body, createdBy, createdAt, imagePath);
     }
 
     @Override
     public String toString() {
-        return "Article[" +
-                "body=" + body + ", " +
-                "createdBy=" + createdBy + ", " +
-                "createdAt=" + createdAt + ']';
+        return "Article{" +
+                "body='" + body + '\'' +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdAt=" + createdAt +
+                ", image='" + imagePath + '\'' +
+                '}';
     }
 
     public boolean isCreatedBy(String userId) {
         return createdBy.equals(userId);
+    }
+
+    public boolean isImageExist() {
+        return imagePath != null && !imagePath.isEmpty();
     }
 }

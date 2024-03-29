@@ -22,7 +22,7 @@ class ArticleTest {
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
         // when
-        Article article = new Article(textBody, author.id(), createdAt);
+        Article article = new Article(textBody, author.id(), createdAt, null);
 
         // then
         assertThat(article.body()).isEqualTo(textBody);
@@ -39,7 +39,7 @@ class ArticleTest {
         LocalDateTime createdAt = LocalDateTime.parse("2024-03-26 00:00:00",
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        Article article = new Article(textBody, author.id(), createdAt);
+        Article article = new Article(textBody, author.id(), createdAt, null);
 
         // when
         boolean isCreatedByYelly = article.isCreatedBy("yelly");
