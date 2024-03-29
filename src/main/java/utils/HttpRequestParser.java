@@ -1,5 +1,7 @@
 package utils;
 
+import static java.nio.charset.StandardCharsets.*;
+
 import http.HttpRequest.HttpMethod;
 import http.HttpRequest.HttpRequestUri;
 import http.HttpRequest.HttpVersion;
@@ -112,10 +114,11 @@ public enum HttpRequestParser {
     }
 
     /**
-     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환한다. 이미지 파일은 MultiPart 객체의 contentType에 해당
-     * 확장자(ex. png, jpg, gif 등)를 입력한다.
+     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환한다.
+     * 이미지 파일은 MultiPart 객체의 contentType에 해당 확장자(ex. png, jpg, gif 등)를 입력한다.
+     * Encoding 형식은 ISO_8859_1 를 따른다.
      *
-     * @param httpMessage - HTTP Message
+     * @param httpMessage HTTP Message
      * @return 파싱된 MultiPart 객체의 리스트. 발견된 MultiPart가 없을 경우 빈 리스트를 반환한다.
      */
     public static List<MultiPart> parseMultiPart(String httpMessage) {
@@ -136,7 +139,7 @@ public enum HttpRequestParser {
             /* 본문 부분: 텍스트, 이미지 모두 byte[]로 처리 */
             byte[] partBody = null;
             if (bodyMatcher.find(attrMatcher.start())) {
-                partBody = httpMessage.substring(bodyMatcher.start(1), bodyMatcher.end(1)).getBytes();
+                partBody = httpMessage.substring(bodyMatcher.start(1), bodyMatcher.end(1)).getBytes(ISO_8859_1);
             }
 
             multiParts.add(new MultiPart(name, submittedFileName, contentType, partBody));

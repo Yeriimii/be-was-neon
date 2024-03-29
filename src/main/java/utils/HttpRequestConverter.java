@@ -1,5 +1,6 @@
 package utils;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static http.HttpRequest.*;
 import static utils.HttpConstant.*;
@@ -47,7 +48,7 @@ public class HttpRequestConverter {
                     () -> decode(parseRequestBody(bos.toString(UTF_8))), executorPool);
 
             CompletableFuture<List<MultiPart>> multiPartFuture = CompletableFuture.supplyAsync(
-                    () -> parseMultiPart(bos.toString(UTF_8)), executorPool);
+                    () -> parseMultiPart(bos.toString(ISO_8859_1)), executorPool);
 
             /* 비동기 파싱 실행 */
             CompletableFuture.allOf(requestLineFuture, requestHeaderFuture, requestBodyFuture, multiPartFuture).join();
