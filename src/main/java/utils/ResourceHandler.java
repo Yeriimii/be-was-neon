@@ -2,9 +2,13 @@ package utils;
 
 import static utils.HttpConstant.CRLF;
 
+import http.HttpRequest.MultiPart;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +23,7 @@ public class ResourceHandler {
     public static final String TEMPLATE_PATH = "/templates";
     public static final String MEDIA_PATH = "/media";
     public static final String INDEX_HTML = "index.html";
+    public static final int DEFAULT_BUFFER = 1024;
     public static final Map<String, String> FILE_EXTENSION_MAP = Map.of(
             "html", "text/html",
             "css", "text/css",
@@ -72,5 +77,36 @@ public class ResourceHandler {
             return uri.substring(uri.lastIndexOf(".") + 1);
         }
         return uri;
+    }
+
+    public static void saveImage(MultiPart multiPart, String savePath) {
+        /* 출력 결과물 경로 : '/BASE_PATH/media/userId/filename' */
+        File outputFile = new File(BASE_PATH, savePath);
+
+        /* 파일 저장 로직 */
+        byte[] imageBytes = multiPart.partBody(); // image 정보가 담긴 bytes
+        byte[] buffer = new byte[DEFAULT_BUFFER]; // 기본 버퍼 1Kb
+
+        try (
+                ByteArrayInputStream bis = new ByteArrayInputStream(imageBytes);
+                FileOutputStream fos = new FileOutputStream(outputFile)
+        ) {
+            int read;
+            while ((read = bis.read(buffer)) != -1) {
+                fos.write(buffer, 0, read);
+            }
+        } catch (FileNotFoundException e) {
+            logger.error("[RESOURCE HANDLER ERROR] FILE NOT FOUND {}", e.getMessage());
+        } catch (IOException e) {
+            logger.error("[RESOURCE HANDLER ERROR] IO EXCEPTION {}", e.getMessage());
+        }
+    }
+
+    public static boolean createDirectory(String root, String path) {
+        File directory = new File(root, path);
+        if (!directory.exists()) {
+            return directory.mkdirs();
+        }
+        return false;
     }
 }
