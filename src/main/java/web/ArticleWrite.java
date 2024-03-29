@@ -14,6 +14,9 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import model.Article;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
@@ -73,7 +76,8 @@ public class ArticleWrite extends DynamicHtmlProcessor {
 
         if (photoPart.partBody() != null && photoPart.partBody().length > 0) {
             createDirectory(BASE_PATH + MEDIA_PATH, userId); // '/media' 경로에 '/userId' 폴더 생성
-            saveImage(photoPart, savePath); // '/media/userId' 폴더에 이미지 저장
+            ExecutorService imageExecutor = Executors.newSingleThreadExecutor();
+            CompletableFuture.runAsync(() -> saveImage(photoPart, savePath), imageExecutor); // '/media/userId' 폴더에 이미지 저장
         }
 
 
