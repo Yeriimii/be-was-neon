@@ -48,10 +48,10 @@ class ResourceHandlerTest {
         // then
         assertThat(extensions.size()).isEqualTo(4);
         assertThat(extensions).contains(
-                ".html",
-                ".css",
-                ".svg",
-                ".js"
+                "html",
+                "css",
+                "svg",
+                "js"
         );
     }
 

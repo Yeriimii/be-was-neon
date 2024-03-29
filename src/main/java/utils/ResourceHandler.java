@@ -18,13 +18,13 @@ public class ResourceHandler {
     public static final String TEMPLATE_PATH = "./src/main/resources/templates";
     public static final String INDEX_HTML = "index.html";
     public static final Map<String, String> FILE_EXTENSION_MAP = Map.of(
-            ".html","text/html",
-            ".css", "text/css",
-            ".js", "application/javascript",
-            ".ico", "image/x-icon",
-            ".png", "image/png",
-            ".jpg", "image/jpeg",
-            ".svg", "image/svg+xml");
+            "html", "text/html",
+            "css", "text/css",
+            "js", "application/javascript",
+            "ico", "image/x-icon",
+            "png", "image/png",
+            "jpg", "image/jpeg",
+            "svg", "image/svg+xml");
 
 
     public static byte[] read(String filePath) {
@@ -42,8 +42,9 @@ public class ResourceHandler {
     }
 
     /**
-     * 템플릿 파일을 읽어온다. 매개 변수가 디렉토리인 경우 해당 디렉토리의 'index.html' 파일을 읽는다.
-     * 파일 이름인 경우 해당 파일을 읽는다. 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열("")을 반환한다.
+     * 템플릿 파일을 읽어온다. 매개 변수가 디렉토리인 경우 해당 디렉토리의 'index.html' 파일을 읽는다. 파일 이름인 경우 해당 파일을 읽는다. 파일이 존재하지 않거나 읽을 수 없는 경우 빈
+     * 문자열("")을 반환한다.
+     *
      * @param templateName 템플릿 파일의 경로 (디렉토리 또는 파일)
      * @return 템플릿 파일의 내용을 문자열로 반환하며, 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열("")을 반환한다.
      */
@@ -66,7 +67,7 @@ public class ResourceHandler {
 
     public static String getExtension(String uri) {
         if (uri.contains(".")) {
-            return uri.substring(uri.lastIndexOf("."));
+            return uri.substring(uri.lastIndexOf(".") + 1);
         }
         return uri;
     }
