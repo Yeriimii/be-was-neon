@@ -1,14 +1,13 @@
 package db;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Optional;
 import model.User;
 
 public interface UserDatabase {
-    void addUser(User user) throws SQLException;
+    void add(User user);
 
-    Collection<User> findAll() throws SQLException;
+    Collection<User> findAll();
 
-    Optional<User> findUserById(String userId);
+    Optional<User> findById(String userId);
 }

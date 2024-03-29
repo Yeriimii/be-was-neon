@@ -202,3 +202,10 @@ sequenceDiagram
 - [x] 추가할 때 마다 id가 1씩 증가한다
 - [x] 게시물 아이디로 찾을 수 있다
 - [x] 작성자 아이디로 찾을 수 있다
+
+## H2 Database
+- 테이블 생성할 때 `USER`는 예약어 -> 테이블 이름 `USERS`로 수정
+- [x] User 객체를 저장할 수 있다
+- [x] 특정 User를 userId로 찾을 수 있다
+- [x] 모든 User를 찾을 수 있다
+- [x] 특정 User를 userId로 제거할 수 있다 
