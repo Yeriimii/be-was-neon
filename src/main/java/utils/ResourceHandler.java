@@ -31,6 +31,7 @@ public class ResourceHandler {
             "ico", "image/x-icon",
             "png", "image/png",
             "jpg", "image/jpeg",
+            "gif", "image/gif",
             "svg", "image/svg+xml");
 
 
