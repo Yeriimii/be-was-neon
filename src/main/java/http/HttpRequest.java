@@ -2,7 +2,6 @@ package http;
 
 import static utils.HttpConstant.QUERY_PARAM_SYMBOL;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;

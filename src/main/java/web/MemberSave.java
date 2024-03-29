@@ -3,7 +3,7 @@ package web;
 
 import static utils.HttpConstant.CRLF;
 
-import db.Database;
+import db.UserDatabaseInMemory;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
 import http.HttpResponse;
@@ -14,7 +14,7 @@ public class MemberSave extends StaticHtmlProcessor {
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         if (request.getMethod() == HttpMethod.POST) {
-            Database.addUser(createUser(request));
+            UserDatabaseInMemory.addUser(createUser(request));
 
             responseHeader302(response, "/");
             response.setMessageBody(CRLF);

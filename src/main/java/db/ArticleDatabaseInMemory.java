@@ -9,8 +9,8 @@ import model.Article;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ArticleDatabase {
-    private static final Logger logger = LoggerFactory.getLogger(ArticleDatabase.class);
+public class ArticleDatabaseInMemory {
+    private static final Logger logger = LoggerFactory.getLogger(ArticleDatabaseInMemory.class);
     private static final AtomicLong sequence = new AtomicLong(0L);
     private static final Long INCREASE_STEP = 1L;
     private static final Map<Long, Article> articles = new ConcurrentHashMap<>();

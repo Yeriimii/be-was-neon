@@ -9,8 +9,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Database {
-    private static final Logger logger = LoggerFactory.getLogger(Database.class);
+public class UserDatabaseInMemory {
+    private static final Logger logger = LoggerFactory.getLogger(UserDatabaseInMemory.class);
     private static final Map<String, User> users = new HashMap<>();
 
     public static void addUser(User user) {

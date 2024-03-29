@@ -4,7 +4,7 @@ import static java.nio.charset.StandardCharsets.*;
 import static utils.HttpConstant.CRLF;
 import static utils.ResourceHandler.*;
 
-import db.ArticleDatabase;
+import db.ArticleDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
@@ -60,7 +60,7 @@ public class ArticleWrite extends DynamicHtmlProcessor {
 
         // case 3: POST 요청 (로그인 o)
         Article article = createArticle(request, sessionUser.id());
-        ArticleDatabase.add(article);
+        ArticleDatabaseInMemory.add(article);
 
         responseHeader302(response, "/");
         response.setMessageBody(CRLF);

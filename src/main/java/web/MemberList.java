@@ -2,7 +2,7 @@ package web;
 
 import static utils.HttpConstant.CRLF;
 
-import db.Database;
+import db.UserDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
@@ -40,7 +40,7 @@ public class MemberList extends DynamicHtmlProcessor {
 
         /* 가입된 User List 테이블 추가 */
         changeHtml("<!-- target user -->", "<!-- end user -->", userName);
-        changeHtml("<!-- target list -->", "<!-- end list -->", createUserTable(Database.findAll()));
+        changeHtml("<!-- target list -->", "<!-- end list -->", createUserTable(UserDatabaseInMemory.findAll()));
 
         /* http response 작성 */
         responseHeader200(response, getContentType(request));

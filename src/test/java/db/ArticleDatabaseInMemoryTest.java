@@ -10,11 +10,11 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class ArticleDatabaseTest {
+class ArticleDatabaseInMemoryTest {
 
     @AfterEach
     void clear() {
-        ArticleDatabase.clear();
+        ArticleDatabaseInMemory.clear();
     }
 
     @DisplayName("Article 하나를 저장하면 데이터베이스에 key가 1부터 저장된다")
@@ -27,8 +27,8 @@ class ArticleDatabaseTest {
         Article testArticle1 = new Article("test1", "yelly", createdAt1, null);
 
         // when
-        ArticleDatabase.add(testArticle1);
-        Article firstSaveArticle = ArticleDatabase.findById(1);
+        ArticleDatabaseInMemory.add(testArticle1);
+        Article firstSaveArticle = ArticleDatabaseInMemory.findById(1);
 
         // then
         assertThat(firstSaveArticle.body()).isEqualTo("test1");
@@ -47,10 +47,10 @@ class ArticleDatabaseTest {
         Article testArticle2 = new Article("test2", "trolli", createdAt2, null);
 
         // when
-        ArticleDatabase.add(testArticle1);
-        ArticleDatabase.add(testArticle2);
-        Article firstSaveArticle = ArticleDatabase.findById(1);
-        Article secondSaveArticle = ArticleDatabase.findById(2);
+        ArticleDatabaseInMemory.add(testArticle1);
+        ArticleDatabaseInMemory.add(testArticle2);
+        Article firstSaveArticle = ArticleDatabaseInMemory.findById(1);
+        Article secondSaveArticle = ArticleDatabaseInMemory.findById(2);
 
         // then
         assertThat(firstSaveArticle.body()).isEqualTo("test1");
@@ -72,11 +72,11 @@ class ArticleDatabaseTest {
         // 가장 최신 글
         Article testArticle2 = new Article("latest", "yelly", latestTime, null);
 
-        ArticleDatabase.add(testArticle1);
-        ArticleDatabase.add(testArticle2);
+        ArticleDatabaseInMemory.add(testArticle1);
+        ArticleDatabaseInMemory.add(testArticle2);
 
         // when
-        Article latest = ArticleDatabase.findLatest("yelly").get();
+        Article latest = ArticleDatabaseInMemory.findLatest("yelly").get();
 
         // then
         assertThat(latest.body()).isEqualTo("latest");
@@ -88,7 +88,7 @@ class ArticleDatabaseTest {
     @Test
     void findLatest_fail() {
         // when
-        Optional<Article> latest = ArticleDatabase.findLatest("yelly");
+        Optional<Article> latest = ArticleDatabaseInMemory.findLatest("yelly");
 
         // then
         assertThat(latest.isEmpty()).isTrue();

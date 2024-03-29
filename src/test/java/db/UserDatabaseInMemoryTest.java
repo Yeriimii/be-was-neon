@@ -8,11 +8,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class DatabaseTest {
+class UserDatabaseInMemoryTest {
 
     @BeforeEach
     void resetDatabase() {
-        Database.clear();
+        UserDatabaseInMemory.clear();
     }
 
     @DisplayName("testId를 가진 User 객체를 추가하면 데이트베이스에 Key가 User의 id로 추가된다")
@@ -22,10 +22,10 @@ class DatabaseTest {
         User user = new User("testId", "1234", "testName", "testEmail");
 
         // when
-        Database.addUser(user);
+        UserDatabaseInMemory.addUser(user);
 
         // then
-        assertThat(Database.findUserById("testId").get().getUserId()).isEqualTo("testId");
+        assertThat(UserDatabaseInMemory.findUserById("testId").get().getUserId()).isEqualTo("testId");
     }
 
     @DisplayName("User의 id로 User르 찾을 수 있다")
@@ -35,12 +35,12 @@ class DatabaseTest {
         User userA = new User("userA", "1234", "testA", "testEmailA");
         User userB = new User("userB", "7890", "testB", "testEmailB");
 
-        Database.addUser(userA);
-        Database.addUser(userB);
+        UserDatabaseInMemory.addUser(userA);
+        UserDatabaseInMemory.addUser(userB);
 
         // when
-        User findUserA = Database.findUserById("userA").get();
-        User findUserB = Database.findUserById("userB").get();
+        User findUserA = UserDatabaseInMemory.findUserById("userA").get();
+        User findUserB = UserDatabaseInMemory.findUserById("userB").get();
 
         // then
         assertThat(findUserA).isEqualTo(userA);
@@ -58,12 +58,12 @@ class DatabaseTest {
         User userB = new User("userB", "7890", "testB", "testEmailB");
         User userC = new User("userC", "5555", "testC", "testEmailC");
 
-        Database.addUser(userA);
-        Database.addUser(userB);
-        Database.addUser(userC);
+        UserDatabaseInMemory.addUser(userA);
+        UserDatabaseInMemory.addUser(userB);
+        UserDatabaseInMemory.addUser(userC);
 
         // when
-        Collection<User> users = Database.findAll();
+        Collection<User> users = UserDatabaseInMemory.findAll();
 
         // then
         assertThat(users.size()).isEqualTo(3);

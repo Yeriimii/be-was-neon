@@ -1,6 +1,6 @@
 package login;
 
-import db.Database;
+import db.UserDatabaseInMemory;
 import java.util.Optional;
 import model.User;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ public class LoginManager {
     private static final Logger logger = LoggerFactory.getLogger(LoginManager.class);
 
     public Optional<User> login(String id, String password) {
-        Optional<User> optionalUser = Database.findUserById(id);
+        Optional<User> optionalUser = UserDatabaseInMemory.findUserById(id);
 
         /* 유저 아이디 검증 */
         if (optionalUser.isEmpty()) {

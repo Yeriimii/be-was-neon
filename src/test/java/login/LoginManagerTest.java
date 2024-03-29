@@ -2,7 +2,7 @@ package login;
 
 import static org.assertj.core.api.Assertions.*;
 
-import db.Database;
+import db.UserDatabaseInMemory;
 import java.util.Optional;
 import model.User;
 import org.junit.jupiter.api.AfterEach;
@@ -17,12 +17,12 @@ class LoginManagerTest {
 
     @BeforeEach
     void setUp() {
-        Database.addUser(testUser);
+        UserDatabaseInMemory.addUser(testUser);
     }
 
     @AfterEach
     void clear() {
-        Database.clear();
+        UserDatabaseInMemory.clear();
     }
 
     @DisplayName("등록된 유저의 아이디 yelly, 패스워드를 yelly123에 대해 로그인에 성공하면 해당 유저를 반환한다")

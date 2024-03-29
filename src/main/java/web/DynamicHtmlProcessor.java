@@ -1,6 +1,6 @@
 package web;
 
-import db.ArticleDatabase;
+import db.ArticleDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
@@ -37,7 +37,7 @@ public class DynamicHtmlProcessor extends HttpProcessor {
             changeHtml("<!-- target user -->", "<!-- end user -->", userProfile);
 
             /* 작성한 게시글이 있으면 게시글 내용 입력 */
-            Optional<Article> optionalArticle = ArticleDatabase.findLatest(user.id());
+            Optional<Article> optionalArticle = ArticleDatabaseInMemory.findLatest(user.id());
             optionalArticle.ifPresent(this::createImage);
             optionalArticle.ifPresent(this::createArticleBody);
         }
