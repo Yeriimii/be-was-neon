@@ -14,8 +14,10 @@ import org.slf4j.LoggerFactory;
 
 public class ResourceHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceHandler.class);
-    public static final String STATIC_PATH = "./src/main/resources/static";
-    public static final String TEMPLATE_PATH = "./src/main/resources/templates";
+    public static final String BASE_PATH = "./src/main/resources";
+    public static final String STATIC_PATH = "/static";
+    public static final String TEMPLATE_PATH = "/templates";
+    public static final String MEDIA_PATH = "/media";
     public static final String INDEX_HTML = "index.html";
     public static final Map<String, String> FILE_EXTENSION_MAP = Map.of(
             "html", "text/html",
@@ -50,11 +52,11 @@ public class ResourceHandler {
      */
     public static String readTemplate(String templateName) {
         // 디렉토리인 경우 인덱스 파일 추가
-        if (new File(TEMPLATE_PATH + templateName).isDirectory()) {
+        if (new File(BASE_PATH + TEMPLATE_PATH + templateName).isDirectory()) {
             templateName += INDEX_HTML;
         }
 
-        File file = new File(TEMPLATE_PATH + templateName);
+        File file = new File(BASE_PATH + TEMPLATE_PATH + templateName);
 
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             return reader.lines().collect(Collectors.joining(CRLF));
