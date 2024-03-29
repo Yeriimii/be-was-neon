@@ -5,6 +5,7 @@ import static utils.ResourceHandler.*;
 import http.HttpRequest;
 import http.HttpResponse;
 import http.HttpStatus;
+import java.io.File;
 
 public abstract class HttpProcessor {
     public static final String BASIC_HTTP_VERSION = "HTTP/1.1";
@@ -19,13 +20,16 @@ public abstract class HttpProcessor {
     public byte[] getBytes(HttpRequest request) { // TODO: StaticHttpProcessor 로 이동시키기
         String extension = getExtension(request.getRequestURI());
 
-        if (FILE_EXTENSION_MAP.containsKey(extension)) { // /index.html, /min.css, ...
-            return read(STATIC_PATH + request.getRequestURI());
+        if (FILE_EXTENSION_MAP.containsKey(extension)) { // 파일 확장자가 존재하면
+            if (request.getRequestURI().startsWith(MEDIA_PATH)) {
+                return read(BASE_PATH + request.getRequestURI());
+            }
+            return read(BASE_PATH + STATIC_PATH + request.getRequestURI());
         }
         if (request.getPath().equals("/")) { // localhost:8080/
-            return read(STATIC_PATH + "/" + INDEX_HTML);
+            return read(BASE_PATH + STATIC_PATH + File.separator + INDEX_HTML);
         }
-        return read(STATIC_PATH + request.getPath() + "/" + INDEX_HTML); // /registration
+        return read(BASE_PATH + STATIC_PATH + request.getPath() + File.separator + INDEX_HTML); // /registration
     }
 
     public void responseHeader200(HttpResponse response, String contentType) {
