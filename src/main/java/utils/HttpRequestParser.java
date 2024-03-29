@@ -131,7 +131,7 @@ public enum HttpRequestParser {
             String name = attrMatcher.group(1);
 
             /* 전송한 파일의 이름 */
-            String submittedFileName = attrMatcher.group(2);
+            String submittedFileName = encodeByUtf8(attrMatcher.group(2));
 
             /* Content-Type 라인 */
             String contentType = attrMatcher.group(3);
@@ -145,5 +145,12 @@ public enum HttpRequestParser {
             multiParts.add(new MultiPart(name, submittedFileName, contentType, partBody));
         }
         return Collections.unmodifiableList(multiParts);
+    }
+
+    private static String encodeByUtf8(String submittedFileName) {
+        if (submittedFileName != null) {
+            submittedFileName = new String(submittedFileName.getBytes(ISO_8859_1), UTF_8);
+        }
+        return submittedFileName;
     }
 }
