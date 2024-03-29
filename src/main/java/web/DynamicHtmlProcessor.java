@@ -37,9 +37,9 @@ public class DynamicHtmlProcessor extends HttpProcessor {
             changeHtml("<!-- target user -->", "<!-- end user -->", userProfile);
 
             /* 작성한 게시글이 있으면 게시글 내용 입력 */
-            Optional<Article> article = ArticleDatabase.findLatest(user.id());
-            article.ifPresent(latestArticle ->
-                    changeHtml("<!-- target article -->", "<!-- end article -->", latestArticle.body()));
+            Optional<Article> optionalArticle = ArticleDatabase.findLatest(user.id());
+            optionalArticle.ifPresent(this::createImage);
+            optionalArticle.ifPresent(this::createArticleBody);
         }
 
         /* http response 작성 */
@@ -80,5 +80,15 @@ public class DynamicHtmlProcessor extends HttpProcessor {
                 <a href ="/logout" id="logout-btn" class="btn btn_danger btn_size_s">로그아웃</a>
                 </li >
                 """, userId);
+    }
+
+    private void createImage(Article article) {
+        if (article.isImageExist()) {
+            changeHtml("<!-- target photo -->", "<!-- end photo -->", "<img class=\"post__img\" src=\"" + article.imagePath() + "\"/>");
+        }
+    }
+
+    private void createArticleBody(Article article) {
+        changeHtml("<!-- target article -->", "<!-- end article -->", article.body());
     }
 }
