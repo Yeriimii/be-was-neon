@@ -1,12 +1,16 @@
 package web;
 
+import static java.nio.charset.StandardCharsets.*;
 import static utils.HttpConstant.CRLF;
+import static utils.ResourceHandler.*;
 
 import db.ArticleDatabase;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
+import http.HttpRequest.MultiPart;
 import http.HttpResponse;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +66,27 @@ public class ArticleWrite extends DynamicHtmlProcessor {
     }
 
     private Article createArticle(HttpRequest request, String userId) {
-        String body = request.getParameter("article-body");
+        MultiPart articlePart = request.getPart("article-body");
+        MultiPart photoPart = request.getPart("photo");
 
-        return new Article(body, userId, LocalDateTime.now());
+        String savePath = makeSavePath(photoPart, userId); // 이미지 저장 경로 '/media/userId/finaName.jpg'
+
+        if (photoPart.partBody() != null && photoPart.partBody().length > 0) {
+            createDirectory(BASE_PATH + MEDIA_PATH, userId); // '/media' 경로에 '/userId' 폴더 생성
+            saveImage(photoPart, savePath); // '/media/userId' 폴더에 이미지 저장
+        }
+
+
+        String articleBody = new String(articlePart.partBody(), UTF_8); // ISO -> UTF-8 인코딩
+
+        return new Article(articleBody, userId, LocalDateTime.now(), savePath);
+    }
+
+    private String makeSavePath(MultiPart photoPart, String userId) {
+        String imagePath = "";
+        if (photoPart.submittedFileName() != null) {
+            imagePath = MEDIA_PATH + File.separator + userId + File.separator + photoPart.submittedFileName();
+        }
+        return imagePath;
     }
 }
