@@ -18,8 +18,8 @@ class UriMapperTest {
         UriMapper mapper = UriMapper.getInstance();
 
         // when
-        Optional<HttpProcessor> rootProcessor = mapper.getProcessor(rootUrl);
-        Optional<HttpProcessor> indexProcessor = mapper.getProcessor(staticUrl);
+        Optional<Processor> rootProcessor = mapper.getProcessor(rootUrl);
+        Optional<Processor> indexProcessor = mapper.getProcessor(staticUrl);
 
         // then
         assertThat(rootProcessor.isPresent()).isTrue();
@@ -37,7 +37,7 @@ class UriMapperTest {
         UriMapper mapper = UriMapper.getInstance();
 
         // when
-        Optional<HttpProcessor> notFoundProcessor = mapper.getProcessor(notFoundUrl);
+        Optional<Processor> notFoundProcessor = mapper.getProcessor(notFoundUrl);
 
         // then
         assertThat(notFoundProcessor.isEmpty()).isTrue();

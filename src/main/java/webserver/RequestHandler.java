@@ -11,8 +11,8 @@ import java.net.Socket;
 
 import http.HttpResponse;
 import http.HttpRequest;
+import web.Processor;
 import web.UriMapper;
-import web.HttpProcessor;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,16 +45,16 @@ public class RequestHandler implements Runnable {
             response = convertToHttpResponse(out);
 
             // HttpRequest를 처리할 Processor 찾기
-            Optional<HttpProcessor> optionalProcessor = findProcessor(request.getPath());
+            Optional<Processor> optionalProcessor = findProcessor(request.getPath());
 
             // Processor가 존재하면 로직 실행, 없으면 404 status 반환
-            optionalProcessor.ifPresentOrElse(processor -> processor.service(request, response), responseEmpty);
+            optionalProcessor.ifPresentOrElse(processor -> processor.process(request, response), responseEmpty);
         } catch (IOException e) {
             logger.error("[REQUEST HANDLER ERROR] {}", e.getMessage());
         }
     }
 
-    public Optional<HttpProcessor> findProcessor(String uri) {
+    public Optional<Processor> findProcessor(String uri) {
         return UriMapper.getInstance().getProcessor(uri);
     }
 }
