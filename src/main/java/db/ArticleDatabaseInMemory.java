@@ -20,7 +20,7 @@ public class ArticleDatabaseInMemory {
         logger.debug("[Database] Success Add Article={}", article.body());
     }
 
-    private static long getNextArticleId() {
+    public static long getNextArticleId() {
         return sequence.addAndGet(INCREASE_STEP);
     }
 

@@ -4,16 +4,22 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public final class Article {
+    private long id;
     private final String body;
     private final String createdBy; // 작성자 아이디
     private final LocalDateTime createdAt;
     private final String imagePath;
 
     public Article(String body, String createdBy, LocalDateTime createdAt, String imagePath) {
+        this.id = id;
         this.body = body;
         this.createdBy = createdBy;
         this.createdAt = createdAt;
         this.imagePath = imagePath;
+    }
+
+    public long id() {
+        return id;
     }
 
     public String body() {
@@ -65,5 +71,10 @@ public final class Article {
 
     public boolean isImageExist() {
         return imagePath != null && !imagePath.isEmpty();
+    }
+
+    public Article setId(long id) {
+        this.id = id;
+        return this;
     }
 }

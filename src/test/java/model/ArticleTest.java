@@ -2,6 +2,7 @@ package model;
 
 import static org.assertj.core.api.Assertions.*;
 
+import db.ArticleDatabaseInMemory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.junit.jupiter.api.DisplayName;
