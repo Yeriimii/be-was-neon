@@ -2,19 +2,20 @@ package web;
 
 import static utils.HttpConstant.CRLF;
 
-import db.UserDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import manager.UserManager;
 import model.User;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
 
 public class MemberList extends DynamicHtmlProcessor {
     private final SessionManager sessionManager = new SessionManager();
+    private final UserManager userManager = new UserManager();
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
@@ -40,7 +41,7 @@ public class MemberList extends DynamicHtmlProcessor {
 
         /* 가입된 User List 테이블 추가 */
         changeHtml("<!-- target user -->", "<!-- end user -->", userName);
-        changeHtml("<!-- target list -->", "<!-- end list -->", createUserTable(UserDatabaseInMemory.findAll()));
+        changeHtml("<!-- target list -->", "<!-- end list -->", createUserTable(userManager.findAllUser()));
 
         /* http response 작성 */
         responseHeader200(response, getContentType(request));

@@ -9,6 +9,7 @@ import http.HttpResponse;
 import model.User;
 
 public class MemberSave extends StaticHtmlProcessor {
+    private final UserManager userManager = new UserManager();
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
@@ -19,6 +20,7 @@ public class MemberSave extends StaticHtmlProcessor {
             response.setMessageBody(CRLF);
 
             response.flush();
+            User user = createUser(request);
             return;
         }
         super.process(request, response);
