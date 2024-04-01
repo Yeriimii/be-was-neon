@@ -184,8 +184,10 @@ sequenceDiagram
 - [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
 - [x] 존재하지 않는 URI는 빈 Optional을 반환할 수 있다
 
-## LoginManager
+## UserManager
 - [x] 데이터베이스에 등록된 유저인지 검증할 수 있다
+- [x] 회원가입에 대한 결과를 참/거짓으로 반환할 수 있다
+- [x] 회원가입된 모든 유저들을 반환할 수 있다
 
 ## SessionManager
 - [x] 세션 ID를 UUID 로 생성할 수 있다

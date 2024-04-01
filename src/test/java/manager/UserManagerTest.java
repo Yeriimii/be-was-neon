@@ -1,28 +1,33 @@
 package manager;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import db.UserDatabaseInMemory;
+import java.util.Collection;
 import java.util.Optional;
 import model.User;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 class UserManagerTest {
     private final UserManager userManager = new UserManager();
-    private final User testUser = new User("yelly", "yelly123", "yelly", "yelly@code.com");;
+    private final User testUser = new User("yelly", "yelly123", "yelly", "yelly@code.com");
 
     @BeforeEach
     void setUp() {
-        UserDatabaseInMemory.addUser(testUser);
+        userManager.join(testUser);
     }
 
     @AfterEach
     void clear() {
-        UserDatabaseInMemory.clear();
+        userManager.deleteUser(testUser);
+
+        // 임시 테스터
+        User tempTester = new User("testId", "123", "tester", "test@test.com");
+        userManager.deleteUser(tempTester);
     }
 
     @DisplayName("등록된 유저의 아이디 yelly, 패스워드를 yelly123에 대해 로그인에 성공하면 해당 유저를 반환한다")
@@ -57,5 +62,49 @@ class UserManagerTest {
 
         // then
         assertThat(optionalUser.isEmpty()).isTrue();
+    }
+
+    @DisplayName("회원가입을 처음하는 tester 유저에 대해 회원가입 결과는 참이다")
+    @Test
+    void join_success() {
+        // given
+        User tester = new User("testId", "123", "tester", "test@test.com");
+
+        // when
+        boolean result = userManager.join(tester);
+
+        // then
+        assertThat(result).isTrue();
+    }
+
+    @DisplayName("이미 존재하는 yelly 라는 아이디로 회원가입 시도하면 결과는 거짓이다")
+    @Test
+    void join_fail() {
+        // given
+        User tester = new User("yelly", "123", "yelly", "yelly@test.com");
+
+        // when
+        userManager.join(tester);
+        boolean result = userManager.join(tester); // 중복 회원가입
+
+        // then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("회원가입 되어있는 2명을 모두 찾을 수 있다")
+    @Test
+    void findAllUser_size_2() {
+        // given
+        User tester = new User("testId", "123", "yelly", "yelly@test.com");
+        userManager.join(tester);
+
+        // when
+        Collection<User> allUser = userManager.findAllUser();
+
+        // then
+        assertThat(allUser).size().isEqualTo(2);
+        assertThat(allUser).contains(
+                testUser, tester
+        );
     }
 }
