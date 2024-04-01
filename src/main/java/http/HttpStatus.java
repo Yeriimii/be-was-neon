@@ -8,6 +8,7 @@ public enum HttpStatus {
     STATUS_FORBIDDEN(403, "Forbidden"),
     STATUS_NOT_FOUND(404, "Not Found"),
     STATUS_NOT_ALLOWED(405, "Method Not Allowed"),
+    INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
     ;
 
     public final int code;
