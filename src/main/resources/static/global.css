@@ -213,3 +213,16 @@
   opacity: 0;
   cursor: pointer;
 }
+
+.error__heading {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333333; /* 또는 원하는 색상 */
+  margin-bottom: 10px;
+}
+
+.error__message {
+  font-size: 18px;
+  color: #333333; /* 또는 원하는 색상 */
+  margin-bottom: 20px;
+}
