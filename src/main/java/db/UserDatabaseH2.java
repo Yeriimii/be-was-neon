@@ -87,6 +87,7 @@ public class UserDatabaseH2 implements UserDatabase {
         return new ArrayList<>();
     }
 
+    @Override
     public void delete(String userId) {
         String sql = "delete from users where user_id = ?";
 

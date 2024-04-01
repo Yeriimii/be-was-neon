@@ -10,4 +10,6 @@ public interface UserDatabase {
     Collection<User> findAll();
 
     Optional<User> findById(String userId);
+
+    void delete(String userId);
 }
