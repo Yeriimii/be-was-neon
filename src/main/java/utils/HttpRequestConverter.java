@@ -22,6 +22,12 @@ import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * HTTP 요청을 HttpRequest 객체로 변환하는 유틸리티 클래스입니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
     private static final Predicate<String> CHECK_ALL_CONTENT_RECEIVED = request -> parseRequestBody(request).length()
@@ -29,6 +35,11 @@ public class HttpRequestConverter {
     private static final Predicate<String> CHECK_END_OF_BOUNDARY = request -> request.endsWith("--" + CRLF);
     private static final HttpRequestBuilder REQUEST_BUILDER = new HttpRequestBuilder();
 
+    /**
+     * InputStream으로부터 받은 데이터를 기반으로 HttpRequest 객체로 변환합니다.
+     * @param in InputStream 객체
+     * @return HttpRequest 객체
+     */
     public static HttpRequest convertToHttpRequest(InputStream in) {
         try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             /* request 전부 읽기 */

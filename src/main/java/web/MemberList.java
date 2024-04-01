@@ -13,10 +13,25 @@ import model.User;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
 
+/**
+ * 회원 목록을 처리하는 클래스입니다.
+ * DynamicHtmlProcessor를 상속받아 로그인된 사용자의 목록을 표시합니다.
+ * 세션이 없으면 로그인 페이지로 리다이렉션합니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class MemberList extends DynamicHtmlProcessor {
     private final SessionManager sessionManager = new SessionManager();
     private final UserManager userManager = new UserManager();
 
+    /**
+     * HTTP 요청을 처리합니다.
+     * 세션이 없으면 로그인 페이지로 리다이렉션하고,
+     * 로그인된 사용자의 목록을 표시합니다.
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     */
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         List<Cookie> cookies = request.getCookie();
@@ -50,6 +65,11 @@ public class MemberList extends DynamicHtmlProcessor {
         response.flush();
     }
 
+    /**
+     * User 객체 리스트를 HTML 테이블로 변환합니다.
+     * @param users User 객체 목록
+     * @return HTML 테이블 문자열
+     */
     private String createUserTable(Collection<User> users) {
         StringBuilder htmlBuilder = new StringBuilder();
 

@@ -13,12 +13,29 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 회원 로그인을 처리하는 클래스입니다.
+ * StaticHtmlProcessor를 상속받아 GET 요청일 때는 상위 클래스의 처리를 따르고,
+ * POST 요청일 때는 로그인을 수행합니다.
+ * 로그인이 실패하면 login-failed.html로 리다이렉션하고,
+ * 성공하면 index.html로 리다이렉션하며 세션을 생성하여 등록합니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class MemberLogin extends StaticHtmlProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MemberLogin.class);
     private static final String SESSION_NAME = "SID";
     private final UserManager userManager = new UserManager();
     private final SessionManager sessionManager = new SessionManager();
 
+    /**
+     * HTTP 요청을 처리합니다.
+     * GET 요청일 때는 상위 클래스의 처리를 따르고,
+     * POST 요청일 때는 로그인을 수행합니다.
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     */
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         if (request.getMethod().equals(HttpMethod.GET)) {

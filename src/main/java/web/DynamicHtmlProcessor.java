@@ -14,12 +14,24 @@ import session.SessionManager;
 import session.SessionManager.SessionUser;
 import utils.ResourceHandler;
 
+/**
+ * 동적 HTML을 처리하는 클래스입니다.
+ * HttpProcessor를 상속받아 HTTP 요청에 따라 동적인 HTML을 생성합니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class DynamicHtmlProcessor extends HttpProcessor {
 
     private final SessionManager sessionManager = new SessionManager();
     private final ArticleManager articleManager = new ArticleManager();
     public final StringBuilder htmlBuilder = new StringBuilder();
 
+    /**
+     * HTTP 요청을 처리합니다.
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     */
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         if (request.getMethod() == HttpMethod.POST) {
@@ -57,15 +69,19 @@ public class DynamicHtmlProcessor extends HttpProcessor {
         response.flush();
     }
 
+    /**
+     * 템플릿 파일을 읽어옵니다.
+     * @param templateName 템플릿 파일 이름
+     * @return 템플릿 파일 내용
+     */
     public String readTemplate(String templateName) {
         return ResourceHandler.readTemplate(templateName);
     }
 
     /**
-     * HTML 문자열에서 주어진 시작 문자열(start)과 끝 문자열(end) 사이의 내용을 지우고, 대체할 새로운 템플릿(template)을 삽입한다.
-     *
-     * @param start    대체할 문자열의 시작 부분
-     * @param end      대체할 문자열의 마지막 부분
+     * HTML 문자열에서 주어진 시작 문자열(start)과 끝 문자열(end) 사이의 내용을 지우고, 대체할 새로운 템플릿(template)을 삽입합니다.
+     * @param start 대체할 문자열의 시작 부분
+     * @param end 대체할 문자열의 마지막 부분
      * @param template 대체할 새로운 템플릿 문자열
      */
     public void changeHtml(String start, String end, String template) {
@@ -73,6 +89,11 @@ public class DynamicHtmlProcessor extends HttpProcessor {
         htmlBuilder.insert(htmlBuilder.indexOf(start), template);
     }
 
+    /**
+     * 사용자 프로필을 생성합니다.
+     * @param userId 사용자 ID
+     * @return 사용자 프로필 HTML 문자열
+     */
     private String createUserProfile(String userId) {
         return String.format("""
                 <li class="header__menu__item">
@@ -90,6 +111,10 @@ public class DynamicHtmlProcessor extends HttpProcessor {
                 """, userId);
     }
 
+    /**
+     * 게시글에 이미지를 추가합니다.
+     * @param article 게시글 객체
+     */
     private void createImage(Article article) {
         if (article.isImageExist()) {
             changeHtml("<!-- target photo -->", "<!-- end photo -->",
@@ -97,6 +122,10 @@ public class DynamicHtmlProcessor extends HttpProcessor {
         }
     }
 
+    /**
+     * 게시글 본문을 추가합니다.
+     * @param article 게시글 객체
+     */
     private void createArticleBody(Article article) {
         changeHtml("<!-- target article -->", "<!-- end article -->", article.body());
     }

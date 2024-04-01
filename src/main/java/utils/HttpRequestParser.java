@@ -14,6 +14,12 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * HTTP 요청을 파싱하는 유틸리티 클래스입니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public enum HttpRequestParser {
     REQUEST_LINE(Pattern.compile("(?s)(^GET|^POST) (/.*?)\\s(HTTP/.{1,3})")),
     METHOD(Pattern.compile("(?s)(^GET|^POST)")),
@@ -33,6 +39,11 @@ public enum HttpRequestParser {
         this.compiledPattern = compiledPattern;
     }
 
+    /**
+     * HTTP 요청 라인을 파싱합니다.
+     * @param header HTTP 헤더
+     * @return HTTP 요청 라인
+     */
     public static String parseRequestLine(String header) {
         Matcher requestLineMatcher = REQUEST_LINE.compiledPattern.matcher(header);
         if (requestLineMatcher.find()) {
@@ -41,6 +52,11 @@ public enum HttpRequestParser {
         return "";
     }
 
+    /**
+     * HTTP 요청 메서드를 파싱합니다.
+     * @param httpMessage HTTP 메시지
+     * @return HTTP 요청 메서드
+     */
     public static HttpMethod parseMethod(String httpMessage) {
         Matcher methodMatcher = METHOD.compiledPattern.matcher(httpMessage);
         if (methodMatcher.find()) {
@@ -49,6 +65,11 @@ public enum HttpRequestParser {
         return HttpMethod.GET;
     }
 
+    /**
+     * HTTP 요청 URI를 파싱합니다.
+     * @param httpMessage HTTP 메시지
+     * @return HTTP 요청 URI
+     */
     public static HttpRequestUri parseUri(String httpMessage) {
         Matcher uriMatcher = URI.compiledPattern.matcher(httpMessage);
         if (uriMatcher.find()) {
@@ -57,6 +78,11 @@ public enum HttpRequestParser {
         return new HttpRequestUri("/");
     }
 
+    /**
+     * HTTP 요청 프로토콜 버전을 파싱합니다.
+     * @param httpMessage HTTP 메시지
+     * @return HTTP 요청 프로토콜 버전
+     */
     public static HttpVersion parseVersion(String httpMessage) {
         Matcher versionMatcher = VERSION.compiledPattern.matcher(httpMessage);
         if (versionMatcher.find()) {
@@ -65,6 +91,11 @@ public enum HttpRequestParser {
         return new HttpVersion("HTTP/1.1");
     }
 
+    /**
+     * HTTP 헤더를 파싱합니다.
+     * @param header HTTP 헤더
+     * @return 파싱된 HTTP 헤더 맵
+     */
     public static Map<String, String> parseHeader(String header) {
         Map<String, String> headers = new HashMap<>();
 
@@ -75,6 +106,11 @@ public enum HttpRequestParser {
         return Collections.unmodifiableMap(headers);
     }
 
+    /**
+     * 쿼리 파라미터를 파싱합니다.
+     * @param header HTTP 헤더
+     * @return 파싱된 쿼리 파라미터 맵
+     */
     public static Map<String, String> parseParams(String header) {
         Map<String, String> paramMap = new HashMap<>();
 
@@ -86,10 +122,9 @@ public enum HttpRequestParser {
     }
 
     /**
-     * Content-Length의 값을 파싱한다. 찾지 못하면 0을 반환한다.
-     *
-     * @param httpMessage HTTP Message
-     * @return Content-Length 값. 찾지 못하면 0을 반환한다.
+     * Content-Length 헤더의 값을 파싱합니다.
+     * @param httpMessage HTTP 메시지
+     * @return Content-Length 값
      */
     public static int parseContentLength(String httpMessage) {
         Matcher lengthMatcher = CONTENT_LENGTH.compiledPattern.matcher(httpMessage);
@@ -100,10 +135,9 @@ public enum HttpRequestParser {
     }
 
     /**
-     * Request Message를 파싱한다. 찾지 못하면 빈 문자열("")을 반환한다.
-     *
-     * @param httpMessage HTTP Message
-     * @return 문자열 Request Message를 반환한다.
+     * HTTP 요청 메시지를 파싱합니다.
+     * @param httpMessage HTTP 메시지
+     * @return HTTP 요청 메시지
      */
     public static String parseRequestBody(String httpMessage) {
         Matcher messageMatcher = REQUEST_MESSAGE.compiledPattern.matcher(httpMessage);
@@ -114,12 +148,12 @@ public enum HttpRequestParser {
     }
 
     /**
-     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환한다.
-     * 이미지 파일은 MultiPart 객체의 contentType에 해당 확장자(ex. png, jpg, gif 등)를 입력한다.
-     * Encoding 형식은 ISO_8859_1 를 따른다.
+     * HTTP 메시지에서 Content-Type이 multipart인 부분을 파싱하여 MultiPart 객체의 리스트를 반환합니다.
+     * 이미지 파일은 MultiPart 객체의 contentType에 해당 확장자(ex. png, jpg, gif 등)를 입력합니다.
+     * Encoding 형식은 ISO_8859_1 를 따릅니다.
      *
      * @param httpMessage HTTP Message
-     * @return 파싱된 MultiPart 객체의 리스트. 발견된 MultiPart가 없을 경우 빈 리스트를 반환한다.
+     * @return 파싱된 MultiPart 객체의 리스트. 발견된 MultiPart가 없을 경우 빈 리스트를 반환합니다.
      */
     public static List<MultiPart> parseMultiPart(String httpMessage) {
         List<MultiPart> multiParts = new ArrayList<>();

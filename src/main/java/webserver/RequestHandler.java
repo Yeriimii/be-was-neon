@@ -18,6 +18,13 @@ import org.slf4j.LoggerFactory;
 import web.Processor;
 import web.UriMapper;
 
+/**
+ * 클라이언트 요청을 처리하는 클래스입니다.
+ * Runnable을 구현하여 다중 스레드로 처리됩니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private final Socket connection;
@@ -28,6 +35,9 @@ public class RequestHandler implements Runnable {
         this.connection = connectionSocket;
     }
 
+    /**
+     * 클라이언트 요청을 처리하는 메서드입니다.
+     */
     public void run() {
         logger.debug("New Client Connect! Connected IP : {}, Port : {}", connection.getInetAddress(),
                 connection.getPort());
@@ -51,6 +61,11 @@ public class RequestHandler implements Runnable {
         }
     }
 
+    /**
+     * 요청 URI에 해당하는 Processor를 찾는 메서드입니다.
+     * @param uri 요청 URI
+     * @return 해당 URI에 매핑된 Processor
+     */
     public Optional<Processor> findProcessor(String uri) {
         return UriMapper.getInstance().getProcessor(uri);
     }

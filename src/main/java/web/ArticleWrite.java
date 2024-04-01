@@ -24,10 +24,22 @@ import model.Article;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
 
+/**
+ * 게시글 작성을 처리하는 클래스입니다.
+ * DynamicHtmlProcessor를 상속받아 게시글 작성 관련 기능을 구현합니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class ArticleWrite extends DynamicHtmlProcessor {
     private final SessionManager sessionManager = new SessionManager();
     private final ArticleManager articleManager = new ArticleManager();
 
+    /**
+     * HTTP 요청을 처리합니다.
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     */
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         List<Cookie> cookies = request.getCookie();
@@ -72,6 +84,12 @@ public class ArticleWrite extends DynamicHtmlProcessor {
         response.flush();
     }
 
+    /**
+     * 게시글을 생성합니다.
+     * @param request HTTP 요청 객체
+     * @param userId 사용자 ID
+     * @return 생성된 게시글 객체
+     */
     private Article createArticle(HttpRequest request, String userId) {
         MultiPart articlePart = request.getPart("article-body");
         MultiPart photoPart = request.getPart("photo");
@@ -90,6 +108,12 @@ public class ArticleWrite extends DynamicHtmlProcessor {
         return new Article(articleBody, userId, LocalDateTime.now(), savePath);
     }
 
+    /**
+     * 이미지 저장 경로를 생성합니다.
+     * @param photoPart MultiPart 객체
+     * @param userId 사용자 ID
+     * @return 이미지 저장 경로
+     */
     private String makeSavePath(MultiPart photoPart, String userId) {
         String imagePath = "";
         if (photoPart.submittedFileName() != null) {

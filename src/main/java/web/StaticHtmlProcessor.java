@@ -6,7 +6,20 @@ import http.HttpRequest;
 import http.HttpResponse;
 import java.io.File;
 
+/**
+ * 정적 HTML 파일을 처리하는 클래스입니다.
+ * HTTPProcessor 클래스를 상속하며, 요청에 대한 처리를 담당합니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class StaticHtmlProcessor extends HttpProcessor {
+
+    /**
+     * HTTP 요청 및 응답에 대한 처리를 수행합니다.
+     * @param request HTTP 요청 객체
+     * @param response HTTP 응답 객체
+     */
     @Override
     public void process(HttpRequest request, HttpResponse response) {
         byte[] resource = getBytes(request);
@@ -17,6 +30,11 @@ public class StaticHtmlProcessor extends HttpProcessor {
         response.flush();
     }
 
+    /**
+     * HTTP 요청으로부터 바이트 배열 형태의 리소스를 가져옵니다.
+     * @param request HTTP 요청 객체
+     * @return 요청에 해당하는 리소스의 바이트 배열
+     */
     public byte[] getBytes(HttpRequest request) {
         String extension = getExtension(request.getRequestURI());
 

@@ -16,6 +16,12 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * 정적 리소스를 처리하는 유틸리티 클래스입니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class ResourceHandler {
     private static final Logger logger = LoggerFactory.getLogger(ResourceHandler.class);
     public static final String BASE_PATH = "./src/main/resources";
@@ -36,6 +42,12 @@ public class ResourceHandler {
             "svg", "image/svg+xml");
 
 
+    /**
+     * 정적 파일을 읽어옵니다.
+     *
+     * @param filePath 파일 경로
+     * @return 파일 내용을 바이트 배열로 반환합니다.
+     */
     public static byte[] read(String filePath) {
         File file = new File(filePath);
         byte[] byteArray = new byte[(int) file.length()]; // 파일의 크기만큼의 바이트 배열 생성
@@ -51,11 +63,11 @@ public class ResourceHandler {
     }
 
     /**
-     * 템플릿 파일을 읽어온다. 매개 변수가 디렉토리인 경우 해당 디렉토리의 'index.html' 파일을 읽는다. 파일 이름인 경우 해당 파일을 읽는다. 파일이 존재하지 않거나 읽을 수 없는 경우 빈
-     * 문자열("")을 반환한다.
+     * 템플릿 파일을 읽어옵니다. 매개 변수가 디렉토리인 경우 해당 디렉토리의 'index.html' 파일을 읽습니다. 파일 이름인 경우 해당 파일을 읽습니다.
+     * 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열("")을 반환합니다.
      *
      * @param templateName 템플릿 파일의 경로 (디렉토리 또는 파일)
-     * @return 템플릿 파일의 내용을 문자열로 반환하며, 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열("")을 반환한다.
+     * @return 템플릿 파일의 내용을 문자열로 반환하며, 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열("")을 반환합니다.
      */
     public static String readTemplate(String templateName) {
         // 디렉토리인 경우 인덱스 파일 추가
@@ -74,6 +86,12 @@ public class ResourceHandler {
         return ""; // 파일이 존재하지 않거나 읽을 수 없는 경우 빈 문자열 반환
     }
 
+    /**
+     * 파일의 확장자를 반환합니다.
+     *
+     * @param uri 파일 경로
+     * @return 파일의 확장자를 반환합니다.
+     */
     public static String getExtension(String uri) {
         if (uri.contains(".")) {
             return uri.substring(uri.lastIndexOf(".") + 1);
@@ -81,6 +99,12 @@ public class ResourceHandler {
         return uri;
     }
 
+    /**
+     * 이미지를 저장합니다.
+     *
+     * @param multiPart MultiPart 객체
+     * @param savePath 저장 경로
+     */
     public static void saveImage(MultiPart multiPart, String savePath) {
         /* 출력 결과물 경로 : '/BASE_PATH/media/userId/filename' */
         File outputFile = new File(BASE_PATH, savePath);
@@ -104,6 +128,13 @@ public class ResourceHandler {
         }
     }
 
+    /**
+     * 디렉토리를 생성합니다.
+     *
+     * @param root 루트 경로
+     * @param path 생성할 디렉토리 경로
+     * @return 디렉토리가 성공적으로 생성되었는지 여부를 반환합니다.
+     */
     public static boolean createDirectory(String root, String path) {
         File directory = new File(root, path);
         if (!directory.exists()) {

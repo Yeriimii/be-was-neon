@@ -14,10 +14,22 @@ import org.h2.util.JdbcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * H2 데이터베이스를 사용하는 Article 데이터베이스 클래스입니다.
+ *
+ * @author yelly
+ * @version 1.0
+ */
 public class ArticleDatabaseH2 implements ArticleDatabase {
     private static final Logger logger = LoggerFactory.getLogger(ArticleDatabaseH2.class);
     private final DataSource dataSource = DataSourceUtil.getDataSource();
 
+    /**
+     * Article을 데이터베이스에 추가합니다.
+     *
+     * @param article 추가할 Article 객체
+     * @return 추가된 Article 객체
+     */
     @Override
     public Article add(Article article) {
         String sql = "INSERT INTO ARTICLE(BODY, CREATED_BY, CREATED_AT, IMAGE_PATH) VALUES (?, ?, ?, ?)";
@@ -48,6 +60,12 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
         return article;
     }
 
+    /**
+     * 주어진 articleId에 해당하는 Article을 데이터베이스에서 찾아 반환합니다.
+     *
+     * @param articleId 찾을 Article의 ID
+     * @return Optional<Article> 객체
+     */
     @Override
     public Optional<Article> findById(long articleId) {
         String sql = "SELECT * FROM ARTICLE WHERE ARTICLE_ID = ?";
@@ -73,6 +91,12 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
         return Optional.empty();
     }
 
+    /**
+     * 주어진 userId로 작성된 가장 최근의 Article을 데이터베이스에서 찾아 반환합니다.
+     *
+     * @param userId 작성자의 ID
+     * @return Optional<Article> 객체
+     */
     @Override
     public Optional<Article> findLatest(String userId) {
         String sql = "SELECT * FROM ARTICLE WHERE CREATED_BY = ? ORDER BY CREATED_AT DESC LIMIT 1";
@@ -98,6 +122,11 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
         return Optional.empty();
     }
 
+    /**
+     * 주어진 articleId에 해당하는 Article을 데이터베이스에서 삭제합니다.
+     *
+     * @param articleId 삭제할 Article의 ID
+     */
     public void delete(long articleId) {
         String sql = "DELETE FROM ARTICLE WHERE ARTICLE_ID = ?";
         Connection con = null;
@@ -109,12 +138,15 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
             pstmt.setLong(1, articleId);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            logger.error("DB SELECT FAILED={}", e.getMessage());
+            logger.error("DB DELETE FAILED={}", e.getMessage());
         } finally {
             close(con, pstmt, null);
         }
     }
 
+    /**
+     * ARTICLE 테이블의 ARTICLE_ID 컬럼을 1부터 재설정합니다.
+     */
     public void resetIdWithOne() {
         String sql = "ALTER TABLE ARTICLE ALTER COLUMN ARTICLE_ID RESTART WITH 1";
 
@@ -126,7 +158,7 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
             pstmt = con.prepareStatement(sql);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            logger.error("DB SELECT FAILED={}", e.getMessage());
+            logger.error("DB ALTER FAILED={}", e.getMessage());
         } finally {
             close(con, pstmt, null);
         }
