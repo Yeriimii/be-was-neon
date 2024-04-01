@@ -19,7 +19,7 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
     private final DataSource dataSource = DataSourceUtil.getDataSource();
 
     @Override
-    public Article add(Article article) throws SQLException {
+    public Article add(Article article) {
         String sql = "INSERT INTO ARTICLE(BODY, CREATED_BY, CREATED_AT, IMAGE_PATH) VALUES (?, ?, ?, ?)";
 
         Connection con = null;
@@ -42,7 +42,6 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
             }
         } catch (SQLException e) {
             logger.error("DB INSERT FAILED={}", e.getMessage());
-            throw e;
         } finally {
             close(con, pstmt, rs);
         }
@@ -50,7 +49,7 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
     }
 
     @Override
-    public Optional<Article> findById(long articleId) throws SQLException {
+    public Optional<Article> findById(long articleId) {
         String sql = "SELECT * FROM ARTICLE WHERE ARTICLE_ID = ?";
 
         Connection con = null;
@@ -75,7 +74,7 @@ public class ArticleDatabaseH2 implements ArticleDatabase {
     }
 
     @Override
-    public Optional<Article> findLatest(String userId) throws SQLException {
+    public Optional<Article> findLatest(String userId) {
         String sql = "SELECT * FROM ARTICLE WHERE CREATED_BY = ? ORDER BY CREATED_AT DESC LIMIT 1";
 
         Connection con = null;

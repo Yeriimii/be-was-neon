@@ -1,13 +1,12 @@
 package db;
 
-import java.sql.SQLException;
 import java.util.Optional;
 import model.Article;
 
 public interface ArticleDatabase {
-    Article add(Article article) throws SQLException;
+    Article add(Article article);
 
-    Optional<Article> findById(long articleId) throws SQLException;
+    Optional<Article> findById(long articleId);
 
-    Optional<Article> findLatest(String userId) throws SQLException;
+    Optional<Article> findLatest(String userId);
 }
