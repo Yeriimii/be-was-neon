@@ -1,8 +1,11 @@
 package web;
 
+import error.ResponseErrorUtil;
 import http.Cookie;
 import http.HttpRequest;
+import http.HttpRequest.HttpMethod;
 import http.HttpResponse;
+import http.HttpStatus;
 import java.util.List;
 import java.util.Optional;
 import manager.ArticleManager;
@@ -19,6 +22,10 @@ public class DynamicHtmlProcessor extends HttpProcessor {
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
+        if (request.getMethod() == HttpMethod.POST) {
+            ResponseErrorUtil.forward(response, HttpStatus.STATUS_NOT_ALLOWED).run();
+        }
+
         List<Cookie> cookies = request.getCookie();
 
         /* 쿠키로부터 세션 아이디 가져오기 */
