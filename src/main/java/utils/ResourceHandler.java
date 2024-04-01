@@ -22,6 +22,7 @@ public class ResourceHandler {
     public static final String STATIC_PATH = "/static";
     public static final String TEMPLATE_PATH = "/templates";
     public static final String MEDIA_PATH = "/media";
+    public static final String ERROR_PATH = BASE_PATH + STATIC_PATH + "/error";
     public static final String INDEX_HTML = "index.html";
     public static final int DEFAULT_BUFFER = 1024;
     public static final Map<String, String> FILE_EXTENSION_MAP = Map.of(
