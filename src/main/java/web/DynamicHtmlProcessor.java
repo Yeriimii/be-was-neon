@@ -1,11 +1,11 @@
 package web;
 
-import db.ArticleDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
+import manager.ArticleManager;
 import model.Article;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
@@ -14,6 +14,7 @@ import utils.ResourceHandler;
 public class DynamicHtmlProcessor extends HttpProcessor {
 
     private final SessionManager sessionManager = new SessionManager();
+    private final ArticleManager articleManager = new ArticleManager();
     public final StringBuilder htmlBuilder = new StringBuilder();
 
     @Override
@@ -37,7 +38,7 @@ public class DynamicHtmlProcessor extends HttpProcessor {
             changeHtml("<!-- target user -->", "<!-- end user -->", userProfile);
 
             /* 작성한 게시글이 있으면 게시글 내용 입력 */
-            Optional<Article> optionalArticle = ArticleDatabaseInMemory.findLatest(user.id());
+            Optional<Article> optionalArticle = articleManager.findLatestArticle(user.id());
             optionalArticle.ifPresent(this::createImage);
             optionalArticle.ifPresent(this::createArticleBody);
         }
@@ -84,7 +85,8 @@ public class DynamicHtmlProcessor extends HttpProcessor {
 
     private void createImage(Article article) {
         if (article.isImageExist()) {
-            changeHtml("<!-- target photo -->", "<!-- end photo -->", "<img class=\"post__img\" src=\"" + article.imagePath() + "\"/>");
+            changeHtml("<!-- target photo -->", "<!-- end photo -->",
+                    "<img class=\"post__img\" src=\"" + article.imagePath() + "\"/>");
         }
     }
 

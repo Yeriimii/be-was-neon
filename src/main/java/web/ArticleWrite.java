@@ -1,10 +1,12 @@
 package web;
 
-import static java.nio.charset.StandardCharsets.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static utils.HttpConstant.CRLF;
-import static utils.ResourceHandler.*;
+import static utils.ResourceHandler.BASE_PATH;
+import static utils.ResourceHandler.MEDIA_PATH;
+import static utils.ResourceHandler.createDirectory;
+import static utils.ResourceHandler.saveImage;
 
-import db.ArticleDatabaseInMemory;
 import http.Cookie;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
@@ -17,12 +19,14 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import manager.ArticleManager;
 import model.Article;
 import session.SessionManager;
 import session.SessionManager.SessionUser;
 
 public class ArticleWrite extends DynamicHtmlProcessor {
     private final SessionManager sessionManager = new SessionManager();
+    private final ArticleManager articleManager = new ArticleManager();
 
     @Override
     public void process(HttpRequest request, HttpResponse response) {
@@ -60,7 +64,7 @@ public class ArticleWrite extends DynamicHtmlProcessor {
 
         // case 3: POST 요청 (로그인 o)
         Article article = createArticle(request, sessionUser.id());
-        ArticleDatabaseInMemory.add(article);
+        articleManager.addArticle(article);
 
         responseHeader302(response, "/");
         response.setMessageBody(CRLF);
@@ -77,9 +81,9 @@ public class ArticleWrite extends DynamicHtmlProcessor {
         if (photoPart.partBody() != null && photoPart.partBody().length > 0) {
             createDirectory(BASE_PATH + MEDIA_PATH, userId); // '/media' 경로에 '/userId' 폴더 생성
             ExecutorService imageExecutor = Executors.newSingleThreadExecutor();
-            CompletableFuture.runAsync(() -> saveImage(photoPart, savePath), imageExecutor); // '/media/userId' 폴더에 이미지 저장
+            CompletableFuture.runAsync(() -> saveImage(photoPart, savePath),
+                    imageExecutor); // '/media/userId' 폴더에 이미지 저장
         }
-
 
         String articleBody = new String(articlePart.partBody(), UTF_8); // ISO -> UTF-8 인코딩
 
