@@ -3,7 +3,6 @@ package web;
 
 import static utils.HttpConstant.CRLF;
 
-import db.UserDatabaseInMemory;
 import http.HttpRequest;
 import http.HttpRequest.HttpMethod;
 import http.HttpResponse;

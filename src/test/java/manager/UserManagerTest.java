@@ -1,4 +1,4 @@
-package login;
+package manager;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -11,8 +11,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
-class LoginManagerTest {
-    private final LoginManager loginManager = new LoginManager();
+class UserManagerTest {
+    private final UserManager userManager = new UserManager();
     private final User testUser = new User("yelly", "yelly123", "yelly", "yelly@code.com");;
 
     @BeforeEach
@@ -30,7 +30,7 @@ class LoginManagerTest {
     @CsvSource(value = "yelly, yelly123")
     void login_success(String id, String password) {
         // when
-        Optional<User> optionalUser = loginManager.login(id, password);
+        Optional<User> optionalUser = userManager.login(id, password);
 
         // then
         assertThat(optionalUser.isPresent()).isTrue();
@@ -42,7 +42,7 @@ class LoginManagerTest {
     @CsvSource(value = "yelly, fail")
     void login_fail_when_mistake_typing_password(String id, String failPassword) {
         // when
-        Optional<User> optionalUser = loginManager.login(id, failPassword);
+        Optional<User> optionalUser = userManager.login(id, failPassword);
 
         // then
         assertThat(optionalUser.isEmpty()).isTrue();
@@ -53,7 +53,7 @@ class LoginManagerTest {
     @CsvSource(value = "noRegister, yelly123")
     void login_fail_when_find_unregistered_user(String noRegisteredId, String password) {
         // when
-        Optional<User> optionalUser = loginManager.login(noRegisteredId, password);
+        Optional<User> optionalUser = userManager.login(noRegisteredId, password);
 
         // then
         assertThat(optionalUser.isEmpty()).isTrue();

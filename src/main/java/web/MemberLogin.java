@@ -7,7 +7,7 @@ import http.Cookie;
 import http.HttpRequest;
 import http.HttpResponse;
 import model.User;
-import login.LoginManager;
+import manager.UserManager;
 import session.SessionManager;
 import java.util.Optional;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class MemberLogin extends StaticHtmlProcessor {
     private static final Logger logger = LoggerFactory.getLogger(MemberLogin.class);
     private static final String SESSION_NAME = "SID";
-    private final LoginManager loginManager = new LoginManager();
+    private final UserManager userManager = new UserManager();
     private final SessionManager sessionManager = new SessionManager();
 
     @Override
@@ -29,7 +29,7 @@ public class MemberLogin extends StaticHtmlProcessor {
         String id = request.getParameter("id");
         String password = request.getParameter("password");
 
-        Optional<User> optionalUser = loginManager.login(id, password);
+        Optional<User> optionalUser = userManager.login(id, password);
 
         /* 로그인 실패: login-failed.html 리다이렉션 */
         if (optionalUser.isEmpty()) {

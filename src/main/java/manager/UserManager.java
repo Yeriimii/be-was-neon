@@ -1,4 +1,4 @@
-package login;
+package manager;
 
 import db.UserDatabaseInMemory;
 import java.util.Optional;
@@ -6,8 +6,8 @@ import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LoginManager {
-    private static final Logger logger = LoggerFactory.getLogger(LoginManager.class);
+public class UserManager {
+    private static final Logger logger = LoggerFactory.getLogger(UserManager.class);
 
     public Optional<User> login(String id, String password) {
         Optional<User> optionalUser = UserDatabaseInMemory.findUserById(id);
