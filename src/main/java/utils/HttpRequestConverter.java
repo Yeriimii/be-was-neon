@@ -1,126 +1,129 @@
 package utils;
 
+import static java.nio.charset.StandardCharsets.ISO_8859_1;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static http.HttpRequest.*;
 import static utils.HttpConstant.*;
 import static utils.HttpRequestParser.*;
 
+import http.Cookie;
 import http.HttpRequest;
 import http.HttpRequestBuilder;
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.Socket;
 import java.net.URLDecoder;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
-    private static final int METHOD_INDEX = 0;
-    private static final int URL_INDEX = 1;
-    private static final int HTTP_VERSION_INDEX = 2;
+    private static final Predicate<String> CHECK_ALL_CONTENT_RECEIVED = request -> parseRequestBody(request).length()
+            == parseContentLength(request);
+    private static final Predicate<String> CHECK_END_OF_BOUNDARY = request -> request.endsWith("--" + CRLF);
+    private static final HttpRequestBuilder REQUEST_BUILDER = new HttpRequestBuilder();
 
-    public static HttpRequest convertToHttpRequest(Socket connection) {
-        String header = makeOneLine(connection);
+    public static HttpRequest convertToHttpRequest(InputStream in) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            /* request 전부 읽기 */
+            readBytes(in, bos);
 
-        return convert(header);
-    }
+            /* 4가지 파싱 작업을 시킬 스레드 풀 생성 */
+            ExecutorService executorPool = Executors.newFixedThreadPool(4);
 
-    public static String makeOneLine(Socket connection) {
-        StringBuilder requestHeader = new StringBuilder();
-        try {
-            InputStream in = connection.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in, "UTF-8"));
-            String line;
-            int contentLength = 0;
+            /* 비동기 파싱 객체 생성 */
+            CompletableFuture<String> requestLineFuture = CompletableFuture.supplyAsync(
+                    () -> decode(parseRequestLine(bos.toString(UTF_8))), executorPool);
 
-            while ((line = reader.readLine()) != null && !line.isEmpty()) {
-                if (contentLength == 0) {
-                    contentLength = calculateContentLength(line);
-                }
-                requestHeader.append(decode(line)).append(CRLF);
-            }
+            CompletableFuture<Map<String, String>> requestHeaderFuture = CompletableFuture.supplyAsync(
+                    () -> parseHeader(bos.toString(UTF_8)), executorPool);
 
-            if (contentLength > 0) {
-                char[] body = new char[contentLength];
-                reader.read(body, 0, contentLength);
-                requestHeader.append(body);
-            }
+            CompletableFuture<String> requestBodyFuture = CompletableFuture.supplyAsync(
+                    () -> decode(parseRequestBody(bos.toString(UTF_8))), executorPool);
+
+            CompletableFuture<List<MultiPart>> multiPartFuture = CompletableFuture.supplyAsync(
+                    () -> parseMultiPart(bos.toString(ISO_8859_1)), executorPool);
+
+            /* 비동기 파싱 실행 */
+            CompletableFuture.allOf(requestLineFuture, requestHeaderFuture, requestBodyFuture, multiPartFuture).join();
+
+            /* 파싱 결과 -> 비동기 빌드 */
+            CompletableFuture<Void> buildFuture = buildHttpRequest(requestLineFuture, requestBodyFuture,
+                    requestHeaderFuture, multiPartFuture);
+
+            buildFuture.join();
+
+            buildFuture.thenRun(executorPool::shutdown);
         } catch (IOException e) {
             logger.error("[REQUEST CONVERTER ERROR] {}", e.getMessage());
         }
-        return decode(requestHeader.toString());
+
+        return REQUEST_BUILDER.build();
     }
 
-    private static int calculateContentLength(String line) {
-        int contentLength = 0;
+    private static CompletableFuture<Void> buildHttpRequest(CompletableFuture<String> requestLineFuture,
+                                                            CompletableFuture<String> requestBodyFuture,
+                                                            CompletableFuture<Map<String, String>> requestHeaderFuture,
+                                                            CompletableFuture<List<MultiPart>> multiPartFuture) {
+        /* 파싱 후 HttpRequestBuilder 작업 생성 */
+        CompletableFuture<Void> methodBuilder = requestLineFuture.thenAccept(
+                requestLine -> REQUEST_BUILDER.setMethod(parseMethod(requestLine)));
 
-        if (!line.startsWith("Content-Length")) {
-            return contentLength;
+        CompletableFuture<Void> uriBuilder = requestLineFuture.thenAccept(
+                requestLine -> REQUEST_BUILDER.setRequestURI(parseUri(requestLine)));
+
+        CompletableFuture<Void> versionBuilder = requestLineFuture.thenAccept(
+                requestLine -> REQUEST_BUILDER.setHttpVersion(parseVersion(requestLine)));
+
+        CompletableFuture<Void> paramsBuilder = requestLineFuture.thenAcceptBoth(requestBodyFuture,
+                (requestLine, requestBody) -> REQUEST_BUILDER.setParameter(
+                        parseParams(requestLine + NEWLINE + requestBody)));
+
+        CompletableFuture<Void> headerBuilder = requestHeaderFuture.thenAccept(REQUEST_BUILDER::setHeaders);
+
+        CompletableFuture<Void> cookieBuilder = requestHeaderFuture.thenAccept(
+                header -> REQUEST_BUILDER.setCookies(extractCookies(header)));
+
+        CompletableFuture<Void> partsBuilder = multiPartFuture.thenAccept(REQUEST_BUILDER::setParts);
+
+        /* 비동기 빌드 Future 객체 전체 반환 */
+        return CompletableFuture.allOf(methodBuilder, uriBuilder, versionBuilder, paramsBuilder, headerBuilder,
+                cookieBuilder, partsBuilder);
+    }
+
+    private static void readBytes(InputStream in, ByteArrayOutputStream bos) throws IOException {
+        byte[] buffer = new byte[8192]; // 8KB (InputStream 의 DEFAULT_BUFFER_SIZE)
+        int bytesRead;
+        while ((bytesRead = in.read(buffer)) != -1) {
+            /* 버퍼 만큼 읽기 */
+            bos.write(buffer, 0, bytesRead);
+
+            /* 읽은 만큼 문자열로 변환 */
+            String request = bos.toString(UTF_8);
+
+            /* 탈출 조건: multipart/form-data EOL 확인 -> Content-Length 만큼 읽었는지 확인 */
+            if (CHECK_END_OF_BOUNDARY.or(CHECK_ALL_CONTENT_RECEIVED).test(request)) {
+                break;
+            }
         }
-
-        return Integer.parseInt(line.substring(line.indexOf(":") + 1).trim());
     }
 
-    private static String decode(String header) {
-        try {
-            return URLDecoder.decode(header, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+    private static String decode(String request) {
+        return URLDecoder.decode(request, UTF_8);
     }
 
-    public static HttpRequest convert(String header) {
-        HttpRequestBuilder builder = new HttpRequestBuilder();
+    private static List<Cookie> extractCookies(Map<String, String> headers) {
+        String cookies = headers.get("Cookie");
+        Map<String, String> cookieMap = parseParams(cookies);
 
-        /* request line */
-        String[] requestLine = splitRequestLine(header);
-
-        HttpMethod method = getMethod(requestLine);
-        String requestURI = getRequestURI(requestLine);
-        String httpVersion = getHttpVersion(requestLine);
-
-        builder.setMethod(method);
-        builder.setRequestURI(requestURI);
-        builder.setHttpVersion(httpVersion);
-
-        /* headers */
-        builder.setHeaders(parseHeader(header));
-
-        /* parameter */
-        if (method == HttpMethod.GET) {
-            builder.setParameter(parseParams(getFullUri(requestLine)));
-        }
-        if (method == HttpMethod.POST) {
-            builder.setParameter(parseParams(getHttpBody(header)));
-        }
-
-        return builder.build();
-    }
-
-    private static String[] splitRequestLine(String header) {
-        return parseRequestLine(header).split(SP); // 'GET /registration?id=test&password=1234 HTTP/1.1'
-    }
-
-    private static HttpMethod getMethod(String[] requestLine) {
-        return HttpMethod.valueOf(requestLine[METHOD_INDEX]);
-    }
-
-    private static String getRequestURI(String[] requestLine) {
-        return requestLine[URL_INDEX].split(QUERY_PARAM_SYMBOL)[0]; // '/registration?id=test&password=1234'에서 ? 기준 앞 부분
-    }
-
-    private static String getHttpVersion(String[] requestLine) {
-        return requestLine[HTTP_VERSION_INDEX];
-    }
-
-    private static String getHttpBody(String header) {
-        return header.substring(header.lastIndexOf(CRLF));
-    }
-
-    private static String getFullUri(String[] requestLine) {
-        return String.join(SP, requestLine);
+        return cookieMap.entrySet().stream()
+                .map(entry -> new Cookie(entry.getKey(), entry.getValue()))
+                .toList();
     }
 }

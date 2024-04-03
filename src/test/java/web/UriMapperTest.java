@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 class UriMapperTest {
 
-    @DisplayName("'/' 또는 '/index.html'을 입력받으면 HtmlProcessor를 반환한다")
+    @DisplayName("'/' 또는 '/index.html'을 입력받으면 HttpProcessor를 반환한다")
     @Test
     void getProcessor_root_processor() {
         // given
@@ -18,14 +18,14 @@ class UriMapperTest {
         UriMapper mapper = UriMapper.getInstance();
 
         // when
-        Optional<HttpProcessor> rootProcessor = mapper.getProcessor(rootUrl);
-        Optional<HttpProcessor> indexProcessor = mapper.getProcessor(staticUrl);
+        Optional<Processor> rootProcessor = mapper.getProcessor(rootUrl);
+        Optional<Processor> indexProcessor = mapper.getProcessor(staticUrl);
 
         // then
         assertThat(rootProcessor.isPresent()).isTrue();
-        assertThat(rootProcessor.get()).isInstanceOf(StaticHtmlProcessor.class);
+        assertThat(rootProcessor.get()).isInstanceOf(HttpProcessor.class);
         assertThat(indexProcessor.isPresent()).isTrue();
-        assertThat(indexProcessor.get()).isInstanceOf(StaticHtmlProcessor.class);
+        assertThat(indexProcessor.get()).isInstanceOf(HttpProcessor.class);
     }
 
     @DisplayName("존재하지 않는 URL은 빈 Optional을 반환한다")
@@ -37,7 +37,7 @@ class UriMapperTest {
         UriMapper mapper = UriMapper.getInstance();
 
         // when
-        Optional<HttpProcessor> notFoundProcessor = mapper.getProcessor(notFoundUrl);
+        Optional<Processor> notFoundProcessor = mapper.getProcessor(notFoundUrl);
 
         // then
         assertThat(notFoundProcessor.isEmpty()).isTrue();

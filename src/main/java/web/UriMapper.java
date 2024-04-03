@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class UriMapper {
     private volatile static UriMapper instance;
     private static final Logger logger = LoggerFactory.getLogger(UriMapper.class);
-    private static final Map<String, HttpProcessor> URI_MAP = new HashMap<>();
+    private static final Map<String, Processor> URI_MAP = new HashMap<>();
 
     private UriMapper() {
         setUriMap();
@@ -35,9 +35,10 @@ public class UriMapper {
         URI_MAP.put("/login", new MemberLogin());
         URI_MAP.put("/logout", new MemberLogout());
         URI_MAP.put("/user/list", new MemberList());
+        URI_MAP.put("/article", new ArticleWrite());
     }
 
-    public Optional<HttpProcessor> getProcessor(String uri) {
+    public Optional<Processor> getProcessor(String uri) {
         if (URI_MAP.containsKey(uri)) {
             return Optional.of(URI_MAP.get(uri));
         }

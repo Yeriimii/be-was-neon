@@ -6,26 +6,12 @@ import http.HttpRequest;
 import http.HttpResponse;
 import http.HttpStatus;
 
-public abstract class HttpProcessor {
+public abstract class HttpProcessor implements Processor {
     public static final String BASIC_HTTP_VERSION = "HTTP/1.1";
     public static final String BASIC_CHAR_SET = "utf-8";
 
-    abstract void process(HttpRequest request, HttpResponse response);
-
-    public void service(HttpRequest request, HttpResponse response) {
-        process(request, response);
-    }
-
-    public byte[] getBytes(HttpRequest request) {
-        String extension = getExtension(request.getRequestURI());
-
-        if (FILE_EXTENSION_MAP.containsKey(extension)) { // /index.html, /min.css, ...
-            return read(RESOURCE_PATH + request.getRequestURI());
-        }
-        if (request.getRequestURI().equals("/")) { // localhost:8080/
-            return read(RESOURCE_PATH + "/" + INDEX_HTML);
-        }
-        return read(RESOURCE_PATH + request.getRequestURI() + "/" + INDEX_HTML); // /registration
+    @Override
+    public void process(HttpRequest request, HttpResponse response) {
     }
 
     public void responseHeader200(HttpResponse response, String contentType) {
@@ -35,7 +21,7 @@ public abstract class HttpProcessor {
                 .setCharset(BASIC_CHAR_SET);
     }
 
-    public void responseHeader302(HttpResponse response, String location) {
+    public void responseHeader302(HttpResponse response, String location) { // TODO: HttpResponse 에 sendRedirect() 만들기
         response.setHttpVersion(BASIC_HTTP_VERSION)
                 .setStatusCode(HttpStatus.STATUS_FOUND)
                 .setLocation(location)
@@ -48,7 +34,7 @@ public abstract class HttpProcessor {
     }
 
     public void responseMessage(HttpResponse response, StringBuilder builder) {
-        response.setContentLength(builder.length())
+        response.setContentLength(builder.toString().getBytes().length)
                 .setMessageBody(builder.toString());
 
         builder.setLength(0); // StringBuilder 초기화

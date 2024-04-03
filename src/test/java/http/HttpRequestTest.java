@@ -5,6 +5,8 @@ import static org.assertj.core.api.Assertions.*;
 import http.HttpRequest.HttpMethod;
 import http.HttpRequest.HttpRequestUri;
 import http.HttpRequest.HttpVersion;
+import http.HttpRequest.MultiPart;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +19,14 @@ class HttpRequestTest {
     @Test
     void getCookie() {
         // given
+        Cookie cookie1 = new Cookie("SID", "test-test");
+        Cookie cookie2 = new Cookie("myCookie", "myValue");
         Map<String, String> headers = new HashMap<>();
         headers.put("Cookie", "SID=test-test; myCookie=myValue;");
 
         HttpRequest request = new HttpRequest(
-                HttpMethod.GET, new HttpRequestUri("test"), new HttpVersion("HTTP/1.1"),
-                headers, new HashMap<>()
+                HttpMethod.GET, new HttpRequestUri("test"), new HttpVersion("HTTP/1.1"), headers, new HashMap<>(),
+                List.of(cookie1, cookie2),  List.of(new MultiPart("", "", "", new byte[] {}))
         );
 
         // when
@@ -32,5 +36,26 @@ class HttpRequestTest {
         assertThat(cookies.size()).isEqualTo(2);
         assertThat(cookies).extracting("cookieKey").contains("SID", "myCookie");
         assertThat(cookies).extracting("cookieValue").contains("test-test; ", "myValue; ");
+    }
+
+    @DisplayName("HttpRequest 객체는 속성값 username에 해당하는 문자열 'yelly'를 가진 multipart를 가질 수 있다")
+    @Test
+    void create_multipart_attribute() {
+        // given
+        /* multipart 생성 */
+        String attr = "username";
+        byte[] partBody = "yelly".getBytes(StandardCharsets.UTF_8);
+        MultiPart multiPart = new MultiPart(attr, null, null, partBody);
+
+        /* mock request */
+        HttpRequest mockRequest = new HttpRequest(HttpMethod.POST, new HttpRequestUri("/test"),
+                new HttpVersion("HTTP/1.1"),
+                null, null, null, List.of(multiPart));
+
+        // when
+        MultiPart findPart = mockRequest.getPart("username");
+
+        // then
+        assertThat(findPart.partBody()).isEqualTo("yelly".getBytes(StandardCharsets.UTF_8));
     }
 }

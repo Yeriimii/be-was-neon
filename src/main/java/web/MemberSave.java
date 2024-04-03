@@ -16,7 +16,7 @@ public class MemberSave extends StaticHtmlProcessor {
         if (request.getMethod() == HttpMethod.POST) {
             Database.addUser(createUser(request));
 
-            responseHeader302(response, "/index.html");
+            responseHeader302(response, "/");
             response.setMessageBody(CRLF);
 
             response.flush();

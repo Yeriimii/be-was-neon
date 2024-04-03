@@ -1,7 +1,9 @@
 package http;
 
-import static utils.HttpRequestParser.parseParams;
+import static utils.HttpConstant.QUERY_PARAM_SYMBOL;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -11,14 +13,19 @@ public class HttpRequest {
     private final HttpVersion httpVersion;
     private final Map<String, String> headers;
     private final Map<String, String> parameter;
+    private final List<Cookie> cookies;
+    private final List<MultiPart> parts;
 
     protected HttpRequest(HttpMethod method, HttpRequestUri requestURI, HttpVersion httpVersion,
-                          Map<String, String> headers, Map<String, String> parameter) {
+                          Map<String, String> headers, Map<String, String> parameter,
+                          List<Cookie> cookies, List<MultiPart> parts) {
         this.method = method;
         this.requestURI = requestURI;
         this.httpVersion = httpVersion;
         this.headers = headers;
         this.parameter = parameter;
+        this.cookies = cookies;
+        this.parts = parts;
     }
 
     public HttpMethod getMethod() {
@@ -27,6 +34,10 @@ public class HttpRequest {
 
     public String getRequestURI() {
         return requestURI.uri();
+    }
+
+    public String getPath() {
+        return requestURI.uri().split(QUERY_PARAM_SYMBOL)[0]; // 쿼리 파라미터를 제외한 부분
     }
 
     public String getHttpVersion() {
@@ -42,12 +53,14 @@ public class HttpRequest {
     }
 
     public List<Cookie> getCookie() {
-        String cookies = getHeader("Cookie");
-        Map<String, String> cookieMap = parseParams(cookies);
+        return Collections.unmodifiableList(cookies);
+    }
 
-        return cookieMap.entrySet().stream()
-                .map(entry -> new Cookie(entry.getKey(), entry.getValue()))
-                .toList();
+    public MultiPart getPart(String partName) {
+        return parts.stream()
+                .filter(part -> part.name.equals(partName))
+                .findAny()
+                .orElse(null);
     }
 
     public enum HttpMethod {
@@ -65,5 +78,17 @@ public class HttpRequest {
     }
 
     public record HttpVersion(String version) {
+    }
+
+    public record MultiPart(String name, String submittedFileName, String contentType, byte[] partBody) {
+
+        @Override
+        public String toString() {
+            return "MultiPart[" +
+                    "name=" + name + ", " +
+                    "submittedFileName=" + submittedFileName + ", " +
+                    "contentType=" + contentType + ", " +
+                    "hasPartBody=" + (partBody.length > 0) + ']';
+        }
     }
 }

@@ -163,6 +163,9 @@ sequenceDiagram
 ## HttpHeaderParser
 - [x] request line, host, connection 등을 파싱할 수 있다
 - [x] 쿼리 파라미터를 파싱해서 Map으로 변환할 수 있다
+- [x] Content-Length 값을 파싱할 수 있다
+- [x] Request Body 문자열을 파싱할 수 있다
+- [x] Multi Part Boundary 부분들을 파싱할 수 있다
 
 ## HttpRequestConverter
 - [x] Socket의 connection으로부터 requestString을 한 줄로 만들 수 있다
@@ -175,6 +178,7 @@ sequenceDiagram
 ## ResourceHandler
 - [x] 파일을 읽어 byte로 변환할 수 있다
 - [x] URI 경로에서 확장자만 추출할 수 있다
+- [x] 동적 HTML을 생성하기 위한 템플릿 파일을 읽어 문자열로 반환할 수 있다
 
 ## StaticMapper
 - [x] 요청 URI에 해당하는 정적 파일을 매핑할 수 있다
@@ -193,3 +197,8 @@ sequenceDiagram
 
 ## Cookie
 - [x] 쿠키 값을 설정하고 Path를 설정할 수 있다
+
+## ArticleDatabase
+- [x] 추가할 때 마다 id가 1씩 증가한다
+- [x] 게시물 아이디로 찾을 수 있다
+- [x] 작성자 아이디로 찾을 수 있다
