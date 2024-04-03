@@ -18,7 +18,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.function.Predicate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +29,6 @@ import org.slf4j.LoggerFactory;
  */
 public class HttpRequestConverter {
     private static final Logger logger = LoggerFactory.getLogger(HttpRequestConverter.class);
-    private static final Predicate<String> CHECK_ALL_CONTENT_RECEIVED = request -> parseRequestBody(request).length()
-            == parseContentLength(request);
-    private static final Predicate<String> CHECK_END_OF_BOUNDARY = request -> request.endsWith("--" + CRLF);
     private static final HttpRequestBuilder REQUEST_BUILDER = new HttpRequestBuilder();
 
     /**
@@ -111,18 +107,36 @@ public class HttpRequestConverter {
     private static void readBytes(InputStream in, ByteArrayOutputStream bos) throws IOException {
         byte[] buffer = new byte[8192]; // 8KB (InputStream 의 DEFAULT_BUFFER_SIZE)
         int bytesRead;
+        int contentLength = 0;
+        int requestLengthWithoutBody = 0;
         while ((bytesRead = in.read(buffer)) != -1) {
             /* 버퍼 만큼 읽기 */
             bos.write(buffer, 0, bytesRead);
 
-            /* 읽은 만큼 문자열로 변환 */
-            String request = bos.toString(UTF_8);
+            /* 최초 1번만 Content-Length & requestLength 업데이트 */
+            if (contentLength == 0) {
+                String request = bos.toString(UTF_8);
+                contentLength = parseContentLength(request);
+                requestLengthWithoutBody = getBytesLength(getRequestWithoutBody(request));
+            }
 
-            /* 탈출 조건: multipart/form-data EOL 확인 -> Content-Length 만큼 읽었는지 확인 */
-            if (CHECK_END_OF_BOUNDARY.or(CHECK_ALL_CONTENT_RECEIVED).test(request)) {
+            /* Content-Length 만큼 모두 읽었는지 확인 */
+            if (isRequestFullyReceived(bos, requestLengthWithoutBody, contentLength)) {
                 break;
             }
         }
+    }
+
+    private static boolean isRequestFullyReceived(ByteArrayOutputStream bos, int requestLengthWithoutBody, int contentLength) {
+        return (bos.size() - getBytesLength(CRLF.repeat(2)) - requestLengthWithoutBody) == contentLength;
+    }
+
+    private static String getRequestWithoutBody(String request) {
+        return request.split(CRLF.repeat(2))[0];
+    }
+
+    private static int getBytesLength(String request) {
+        return request.getBytes(UTF_8).length;
     }
 
     private static String decode(String request) {
